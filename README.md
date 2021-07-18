@@ -170,7 +170,7 @@ The best and easiest way is to use `Arduino Library Manager`. Search for `AsyncW
 
 1. Install [VS Code](https://code.visualstudio.com/)
 2. Install [PlatformIO](https://platformio.org/platformio-ide)
-3. Install [**AsyncWebServer_WT32_ETH01** library](https://platformio.org/lib/show/xxxxx/AsyncWebServer_WT32_ETH01) by using [Library Manager](https://platformio.org/lib/show/xxxxx/AsyncWebServer_WT32_ETH01/installation). Search for **AsyncWebServer_WT32_ETH01** in [Platform.io Author's Libraries](https://platformio.org/lib/search?query=author:%22Khoi%20Hoang%22)
+3. Install [**AsyncWebServer_WT32_ETH01** library](https://platformio.org/lib/show/12568/AsyncWebServer_WT32_ETH01) by using [Library Manager](https://platformio.org/lib/show/12568/AsyncWebServer_WT32_ETH01/installation). Search for **AsyncWebServer_WT32_ETH01** in [Platform.io Author's Libraries](https://platformio.org/lib/search?query=author:%22Khoi%20Hoang%22)
 4. Use included [platformio.ini](platformio/platformio.ini) file from examples to ensure that all dependent libraries will installed automatically. Please visit documentation for the other options and examples at [Project Configuration File](https://docs.platformio.org/page/projectconf.html)
 
 
