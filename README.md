@@ -137,7 +137,7 @@ to apply the better and faster **asynchronous** feature of the **powerful** [ESP
 
 #### Releases v1.2.3
 
-1. Initial coding to port [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer) to WT32_ETH01 boards using builtin LAN8720A Ethernet. More supports will be added gradually later, such as AsyncUDP, other Ethernet / WiFi shields.
+1. Initial coding to port [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer) to WT32_ETH01 boards using builtin LAN8720A Ethernet.
 2. Add more examples.
 3. Add debugging features.
 4. Bump up to v1.2.3 to sync with [ESPAsyncWebServer v1.2.3](https://github.com/me-no-dev/ESPAsyncWebServer).
@@ -1584,7 +1584,7 @@ Submit issues to: [AsyncWebServer_WT32_ETH01 issues](https://github.com/khoih-pr
 
 #### Releases v1.2.3
 
-1. Initial coding to port [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer) to WT32_ETH01 boards using builtin LAN8720A Ethernet. More supports will be added gradually later, such as AsyncUDP, other Ethernet / WiFi shields.
+1. Initial coding to port [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer) to WT32_ETH01 boards using builtin LAN8720A Ethernet.
 2. Add more examples.
 3. Add debugging features.
 4. Bump up to v1.2.3 to sync with [ESPAsyncWebServer v1.2.3](https://github.com/me-no-dev/ESPAsyncWebServer).
