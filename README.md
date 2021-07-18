@@ -2,7 +2,6 @@
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/AsyncWebServer_WT32_ETH01.svg?)](https://www.ardu-badge.com/AsyncWebServer_WT32_ETH01)
 [![GitHub release](https://img.shields.io/github/release/khoih-prog/AsyncWebServer_WT32_ETH01.svg)](https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/releases)
-[![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/LICENSE)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](#Contributing)
 [![GitHub issues](https://img.shields.io/github/issues/khoih-prog/AsyncWebServer_WT32_ETH01.svg)](http://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/issues)
 
@@ -12,7 +11,7 @@
 ## Table of contents
 
 * [Table of contents](#table-of-contents)
-* [Why do we need this AsyncWebServer_WT32_ETH01 library](#why-do-we-need-this-qsyncWebServer_wt32_eth01-library)
+* [Why do we need this AsyncWebServer_WT32_ETH01 library](#why-do-we-need-this-asyncwebserver_wt32_eth01-library)
   * [Features](#features)
   * [Why Async is better](#why-async-is-better)
   * [Currently supported Boards](#currently-supported-boards)
@@ -1323,16 +1322,6 @@ build_flags =
 
 ### Examples
 
-  
-  * [ 1. Async_AdvancedWebServer](examples/Async_AdvancedWebServer)
-  * [ 2. AsyncFSBrowser_WT32_ETH01](examples/AsyncFSBrowser_WT32_ETH01)
-  * [ 3. Async_HelloServer](examples/Async_HelloServer)
-  * [ 4. Async_HelloServer2](examples/Async_HelloServer2)
-  * [ 5. AsyncMultiWebServer_WT32_ETH01](examples/AsyncMultiWebServer_WT32_ETH01)
-  * [ 6. Async_PostServer](examples/Async_PostServer)
-  * [ 7. Async_RegexPatterns_WT32_ETH01](examples/Async_RegexPatterns_WT32_ETH01)
-  * [ 8. AsyncSimpleServer_WT32_ETH01](examples/AsyncSimpleServer_WT32_ETH01)
-
  1. [Async_AdvancedWebServer](examples/Async_AdvancedWebServer)
  2. [AsyncFSBrowser_WT32_ETH01](examples/AsyncFSBrowser_WT32_ETH01)
  3. [Async_HelloServer](examples/Async_HelloServer) 
@@ -1533,15 +1522,15 @@ HTTP server started at ports 8082
 You can access the Async Advanced WebServers @ the server IP and corresponding ports (8080, 8081 and 8082)
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/pics/AsyncMultiWebServer_STM32_SVR1.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/pics/AsyncMultiWebServer_WT32_SVR1.png">
 </p>
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/pics/AsyncMultiWebServer_STM32_SVR2.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/pics/AsyncMultiWebServer_WT32_SVR2.png">
 </p>
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/pics/AsyncMultiWebServer_STM32_SVR3.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/pics/AsyncMultiWebServer_WT32_SVR3.png">
 </p>
 
 
@@ -1578,18 +1567,14 @@ Submit issues to: [AsyncWebServer_WT32_ETH01 issues](https://github.com/khoih-pr
 ## TO DO
 
  1. Fix bug. Add enhancement
- 2. Add support to more Ethernet / WiFi shield
 
 
 ## DONE
 
- 1. Initial port to STM32 using builtin LAN8742A Etnernet. Tested on **STM32F7 Nucleo-144 F767ZI**.
+ 1. Initial port to WT32_ETH01 boards using built-in LAN8720A Ethernet
  2. Add more examples.
  3. Add debugging features.
- 4. Add AsyncUDP_STM32 to support Async UDP on STM32
- 5. Add Authentication support (MD5, SHA1).
- 6. Add support to **Ethernet LAN8720** using [STM32Ethernet library](https://github.com/stm32duino/STM32Ethernet), for boards such as **Nucleo-144 (F429ZI, NUCLEO_F746NG, NUCLEO_F746ZG, NUCLEO_F756ZG), Discovery (DISCO_F746NG)** and **STM32F4 boards (BLACK_F407VE, BLACK_F407VG, BLACK_F407ZE, BLACK_F407ZG, BLACK_F407VE_Mini, DIYMORE_F407VGT, FK407M1)**. Tested on **STM32F4 BLACK_F407VE**.
- 7. Add Table-of-Contents and Version String
+ 4. Add Table-of-Contents and Version String
  
 
 ---
@@ -1653,8 +1638,9 @@ If you want to contribute to this project:
 
 ## Copyright
 
-Copyright 2016- Hristo Gochkov
-Copyright 2021- Khoi Hoang
+- Copyright 2016- Hristo Gochkov
+
+- Copyright 2021- Khoi Hoang
 
 
 
