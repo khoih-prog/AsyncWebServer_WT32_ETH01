@@ -1,5 +1,5 @@
 /****************************************************************************************************************************
-  AsyncWebServer_WT32_ETH01.cpp - Dead simple Ethernet AsyncWebServer.  
+  WT32_ETH01_SPIFFSEditor.h - Dead simple Ethernet AsyncWebServer.  
    
   For LAN8720 Ethernet in WT32_ETH01 (ESP32 + LAN8720)
 
@@ -30,73 +30,30 @@
   1.2.4   K Hoang      02/08/2021 Fix Mbed TLS compile error with ESP32 core v2.0.0-rc1+
  *****************************************************************************************************************************/
 
+#ifndef WT32_ETH01_SPIFFSEditor_H_
+#define WT32_ETH01_SPIFFSEditor_H_
+
 #include "AsyncWebServer_WT32_ETH01.h"
 
-bool WT32_ETH01_eth_connected = false;
-
-void WT32_ETH01_onEvent()
+class SPIFFSEditor: public AsyncWebHandler 
 {
-  WiFi.onEvent(WT32_ETH01_event);
-}
+  private:
+    fs::FS _fs;
+    String _username;
+    String _password;
+    bool _authenticated;
+    uint32_t _startTime;
+    
+  public:
+    SPIFFSEditor(const fs::FS& fs, const String& username = String(), const String& password = String());
+    virtual bool canHandle(AsyncWebServerRequest *request) override final;
+    virtual void handleRequest(AsyncWebServerRequest *request) override final;
+    virtual void handleUpload(AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final) override final;
+    
+    virtual bool isRequestHandlerTrivial() override final 
+    {
+      return false;
+    }
+};
 
-void WT32_ETH01_waitForConnect()
-{
-  while (!WT32_ETH01_eth_connected)
-    delay(100);
-}
-
-bool WT32_ETH01_isConnected()
-{
-  return WT32_ETH01_eth_connected;
-}
-
-void WT32_ETH01_event(WiFiEvent_t event)
-{
-  switch (event)
-  {
-    case SYSTEM_EVENT_ETH_START:
-      AWS_LOG(F("\nETH Started"));
-      //set eth hostname here
-      ETH.setHostname("WT32-ETH01");
-      break;
-    case SYSTEM_EVENT_ETH_CONNECTED:
-      AWS_LOG(F("ETH Connected"));
-      break;
-
-    case SYSTEM_EVENT_ETH_GOT_IP:
-      if (!WT32_ETH01_eth_connected)
-      {
-        AWS_LOG3(F("ETH MAC: "), ETH.macAddress(), F(", IPv4: "), ETH.localIP());
-
-        if (ETH.fullDuplex())
-        {
-          AWS_LOG0(F("FULL_DUPLEX, "));
-        }
-        else
-        {
-          AWS_LOG0(F("HALF_DUPLEX, "));
-        }
-
-        AWS_LOG1(ETH.linkSpeed(), F("Mbps"));
-
-        WT32_ETH01_eth_connected = true;
-      }
-
-      break;
-
-    case SYSTEM_EVENT_ETH_DISCONNECTED:
-      AWS_LOG("ETH Disconnected");
-      WT32_ETH01_eth_connected = false;
-      break;
-
-    case SYSTEM_EVENT_ETH_STOP:
-      AWS_LOG("\nETH Stopped");
-      WT32_ETH01_eth_connected = false;
-      break;
-
-    default:
-      break;
-  }
-}
-
-
+#endif    // SPIFFSEditor_H_

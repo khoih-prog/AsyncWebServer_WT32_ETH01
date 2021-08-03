@@ -9,11 +9,12 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01
   Licensed under GPLv3 license 
  
-  Version: 1.2.3
+  Version: 1.2.4
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.2.3   K Hoang      17/07/2021 Initial porting for WT32_ETH01 (ESP32 + LAN8720). Sync with ESPAsyncWebServer v1.2.3
+  1.2.4   K Hoang      02/08/2021 Fix Mbed TLS compile error with ESP32 core v2.0.0-rc1+
  *****************************************************************************************************************************/
 //
 // A simple server implementation with regex routes:

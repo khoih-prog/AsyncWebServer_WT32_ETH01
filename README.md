@@ -16,6 +16,7 @@
   * [Why Async is better](#why-async-is-better)
   * [Currently supported Boards](#currently-supported-boards)
 * [Changelog](#changelog)
+  * [Releases v1.2.4](#releases-v124)
   * [Releases v1.2.3](#releases-v123)
 * [Prerequisites](#prerequisites)
 * [Installation](#installation)
@@ -105,7 +106,7 @@ This library is based on, modified from:
 
 1. [Hristo Gochkov's ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)
 
-to apply the better and faster **asynchronous** feature of the **powerful** [ESPAsyncWebServer Library](https://github.com/me-no-dev/ESPAsyncWebServer) into **WT32_ETH01 boards using LAN8720 Ethernet**.
+to apply the better and faster **asynchronous** feature of the **powerful** [ESPAsyncWebServer Library](https://github.com/me-no-dev/ESPAsyncWebServer) into **WT32_ETH01 boards using LAN8720A Ethernet**.
 
 
 #### Why Async is better
@@ -128,12 +129,18 @@ to apply the better and faster **asynchronous** feature of the **powerful** [ESP
 
 #### Currently supported Boards
 
-1. **WT32_ETH01 boards** using ESP32-based boards and LAN8720 Ethernet
+1. **WT32_ETH01 boards** using ESP32-based boards and LAN8720A Ethernet
 
 ---
 ---
 
 ## Changelog
+
+#### Releases v1.2.4
+
+1. Fix library compile error with ESP32 core v2.0.0-rc1+. Check [Fix compiler error for ESP32-C3 and mbed TLS v2.7.0+ #970](https://github.com/me-no-dev/ESPAsyncWebServer/pull/970)
+2. Verify compatibility with new ESP32 core v2.0.0-rc1+
+
 
 #### Releases v1.2.3
 
@@ -149,7 +156,8 @@ to apply the better and faster **asynchronous** feature of the **powerful** [ESP
 
  1. [`Arduino IDE 1.8.15+` for Arduino](https://www.arduino.cc/en/Main/Software)
  2. [`ESP32 Core 1.0.6+`](https://github.com/espressif/arduino-esp32) for ESP32-based boards. [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
- 3. [`AsyncTCP library v1.1.1+`](https://github.com/me-no-dev/AsyncTCP).
+ 3. [`ESP32 Core 2.0.0-rc1+`](https://github.com/espressif/arduino-esp32) for ESP32-based boards to use experimental ESP32 core v2.0.0-rc1.
+ 4. [`AsyncTCP library v1.1.1+`](https://github.com/me-no-dev/AsyncTCP).
 
 ---
 
@@ -1506,7 +1514,7 @@ Following are debug terminal output and screen shots when running example [Async
 
 ```
 Starting AsyncMultiWebServer_WT32_ETH01 on WT32-ETH01 with ETH_PHY_LAN8720
-AsyncWebServer_WT32_ETH01 v1.2.3
+AsyncWebServer_WT32_ETH01 v1.2.4
 ETH MAC: A8:03:2A:A1:61:73, IPv4: 192.168.2.232
 FULL_DUPLEX, 100Mbps
 
@@ -1582,6 +1590,11 @@ Submit issues to: [AsyncWebServer_WT32_ETH01 issues](https://github.com/khoih-pr
 
 ## Releases
 
+#### Releases v1.2.4
+
+1. Fix library compile error with ESP32 core v2.0.0-rc1+. Check [Fix compiler error for ESP32-C3 and mbed TLS v2.7.0+ #970](https://github.com/me-no-dev/ESPAsyncWebServer/pull/970)
+2. Verify compatibility with new ESP32 core v2.0.0-rc1+
+
 #### Releases v1.2.3
 
 1. Initial coding to port [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer) to WT32_ETH01 boards using builtin LAN8720A Ethernet.
@@ -1593,7 +1606,7 @@ Submit issues to: [AsyncWebServer_WT32_ETH01 issues](https://github.com/khoih-pr
 
 #### Currently Supported Boards
 
-1. **WT32_ETH01 boards** using ESP32-based boards and LAN8720 Ethernet
+1. **WT32_ETH01 boards** using ESP32-based boards and LAN8720A Ethernet
 
 
 ---
