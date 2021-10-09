@@ -22,12 +22,13 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.2.4
+  Version: 1.2.5
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.2.3   K Hoang      17/07/2021 Initial porting for WT32_ETH01 (ESP32 + LAN8720). Sync with ESPAsyncWebServer v1.2.3
   1.2.4   K Hoang      02/08/2021 Fix Mbed TLS compile error with ESP32 core v2.0.0-rc1+
+  1.2.5   K Hoang      09/10/2021 Update `platform.ini` and `library.json`
  *****************************************************************************************************************************/
  
 #ifndef ASYNCEVENTSOURCE_H_
