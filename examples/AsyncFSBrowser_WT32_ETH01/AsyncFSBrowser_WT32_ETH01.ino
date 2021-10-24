@@ -19,7 +19,10 @@
     #error Must use ESP32 core v1.0.6-, with MBEDTLS_VERSION_NUMBER < v2.7.0
   #endif
   
-#endif  
+#endif
+
+// Uncomment to use ESP32 core v1.0.6-
+//#define USING_CORE_ESP32_CORE_V200_PLUS     false
 
 #include <Arduino.h>
 

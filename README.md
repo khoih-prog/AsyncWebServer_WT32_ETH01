@@ -12,6 +12,7 @@
 
 * [Table of contents](#table-of-contents)
 * [Why do we need this AsyncWebServer_WT32_ETH01 library](#why-do-we-need-this-asyncwebserver_wt32_eth01-library)
+  * [Important notes](#Important-notes)
   * [Features](#features)
   * [Why Async is better](#why-async-is-better)
   * [Currently supported Boards](#currently-supported-boards)
@@ -97,6 +98,25 @@
 
 ### Why do we need this [AsyncWebServer_WT32_ETH01 library](https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01)
 
+#### Important notes
+
+ESP32 Core v2.0.0 introduces new `arduino_event_id_t` enum, breaking almost all `WT32_ETH01` codes written for core v1.0.6-.
+
+It's really strange to define that breaking enum `arduino_event_id_t` in [**WiFiGeneric.h**#L36-L78](https://github.com/espressif/arduino-esp32/blob/master/libraries/WiFi/src/WiFiGeneric.h#L36-L78), compared to the old `system_event_id_t`, now placed in [**esp_event_legacy.h**#L29-L63](https://github.com/espressif/arduino-esp32/blob/master/tools/sdk/esp32/include/esp_event/include/esp_event_legacy.h#L29-L63)
+
+It's better to preserve the old enum order and just adding new items **to do no harm to pre-2.0.0 codes**
+
+- Releases v1.2.5- to be used for ESP32 core v1.0.6- only
+- Releases v1.3.0+ can be used for either ESP32 core v2.0.0+ or v1.0.6-. **Default is using core v2.0.0+**
+
+To use with core v1.0.6-, just define in your sketch
+
+```
+#define USING_CORE_ESP32_CORE_V200_PLUS       false
+```
+
+---
+
 #### Features
 
 This library is based on, modified from:
@@ -134,9 +154,11 @@ to apply the better and faster **asynchronous** feature of the **powerful** [ESP
 
 ## Prerequisites
 
- 1. [`Arduino IDE 1.8.16+`](https://www.arduino.cc/en/Main/Software)
- 2. [`ESP32 Core 2.0.0+`](https://github.com/espressif/arduino-esp32) for ESP32-based boards. [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
- 3. [`AsyncTCP library v1.1.1+`](https://github.com/me-no-dev/AsyncTCP).
+ 1. [`Arduino IDE 1.8.16+` for Arduino](https://www.arduino.cc/en/Main/Software)
+ 2. [`ESP32 Core 2.0.0+`](https://github.com/espressif/arduino-esp32) for ESP32-based WT32_ETH01 boards using release v1.3.0+. [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
+ 3. [`ESP32 Core 1.0.6-`](https://github.com/espressif/arduino-esp32) for ESP32-based WT32_ETH01 boards using release v1.2.5- [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
+ 
+ 4. [`AsyncTCP library v1.1.1+`](https://github.com/me-no-dev/AsyncTCP).
 
 ---
 
@@ -1328,6 +1350,9 @@ build_flags =
   #error This code is designed for WT32_ETH01 to run on ESP32 platform! Please check your Tools->Board setting.
 #endif
 
+// Uncomment to use ESP32 core v1.0.6-
+//#define USING_CORE_ESP32_CORE_V200_PLUS     false
+
 #include <Arduino.h>
 
 #define _ASYNC_WEBSERVER_LOGLEVEL_       4
@@ -1488,12 +1513,12 @@ You can access the Async Advanced WebServer @ the server IP
 
 #### 1. AsyncMultiWebServer_WT32_ETH01 on WT32-ETH01 with ETH_PHY_LAN8720
 
-Following are debug terminal output and screen shots when running example [AsyncMultiWebServer_WT32_ETH01](examples/AsyncMultiWebServer_WT32_ETH01) on WT32-ETH01 with ETH_PHY_LAN8720 to demonstrate the operation of 3 independent AsyncWebServers on 3 different ports and how to handle the complicated AsyncMultiWebServers.
+Following are debug terminal output and screen shots when running example [AsyncMultiWebServer_WT32_ETH01](examples/AsyncMultiWebServer_WT32_ETH01) on WT32-ETH01 with ETH_PHY_LAN8720, using EP32 core v2.0.0, to demonstrate the operation of 3 independent AsyncWebServers on 3 different ports and how to handle the complicated AsyncMultiWebServers.
 
 
 ```
 Starting AsyncMultiWebServer_WT32_ETH01 on WT32-ETH01 with ETH_PHY_LAN8720
-AsyncWebServer_WT32_ETH01 v1.2.5
+AsyncWebServer_WT32_ETH01 v1.3.0 for core v2.0.0+
 ETH MAC: A8:03:2A:A1:61:73, IPv4: 192.168.2.232
 FULL_DUPLEX, 100Mbps
 

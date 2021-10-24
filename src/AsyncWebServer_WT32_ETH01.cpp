@@ -22,13 +22,14 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.2.5
+  Version: 1.3.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.2.3   K Hoang      17/07/2021 Initial porting for WT32_ETH01 (ESP32 + LAN8720). Sync with ESPAsyncWebServer v1.2.3
   1.2.4   K Hoang      02/08/2021 Fix Mbed TLS compile error with ESP32 core v2.0.0-rc1+
-  1.2.5   K Hoang      09/10/2021 Update `platform.ini` and `library.json`
+  1.2.5   K Hoang      09/10/2021 Update `platform.ini` and `library.json`Working only with core v1.0.6-
+  1.3.0   K Hoang      23/10/2021 Making compatible with breaking core v2.0.0+
  *****************************************************************************************************************************/
 
 #include "AsyncWebServer_WT32_ETH01.h"
@@ -55,6 +56,57 @@ void WT32_ETH01_event(WiFiEvent_t event)
 {
   switch (event)
   {
+#if USING_CORE_ESP32_CORE_V200_PLUS
+    // For breaking core v2.0.0
+    // Why so strange to define a breaking enum arduino_event_id_t in WiFiGeneric.h
+    // compared to the old system_event_id_t, now in tools/sdk/esp32/include/esp_event/include/esp_event_legacy.h
+    // You can preserve the old enum order and just adding new items to do no harm
+    case ARDUINO_EVENT_ETH_START:
+      AWS_LOG(F("\nETH Started"));
+      //set eth hostname here
+      ETH.setHostname("WT32-ETH01");
+      break;
+    case ARDUINO_EVENT_ETH_CONNECTED:
+      AWS_LOG(F("ETH Connected"));
+      break;
+
+    case ARDUINO_EVENT_ETH_GOT_IP:
+      if (!WT32_ETH01_eth_connected)
+      {
+        AWS_LOG3(F("ETH MAC: "), ETH.macAddress(), F(", IPv4: "), ETH.localIP());
+
+        if (ETH.fullDuplex())
+        {
+          AWS_LOG0(F("FULL_DUPLEX, "));
+        }
+        else
+        {
+          AWS_LOG0(F("HALF_DUPLEX, "));
+        }
+        
+        AWS_LOG1(ETH.linkSpeed(), F("Mbps"));
+
+        WT32_ETH01_eth_connected = true;
+      }
+
+      break;
+
+    case ARDUINO_EVENT_ETH_DISCONNECTED:
+      AWS_LOG("ETH Disconnected");
+      WT32_ETH01_eth_connected = false;
+      break;
+
+    case ARDUINO_EVENT_ETH_STOP:
+      AWS_LOG("\nETH Stopped");
+      WT32_ETH01_eth_connected = false;
+      break;
+      
+#else
+    // For old core v1.0.6-
+    // Core v2.0.0 defines a stupid enum arduino_event_id_t, breaking any code for WT32_ETH01 written for previous core
+    // Why so strange to define a breaking enum arduino_event_id_t in WiFiGeneric.h
+    // compared to the old system_event_id_t, now in tools/sdk/esp32/include/esp_event/include/esp_event_legacy.h
+    // You can preserve the old enum order and just adding new items to do no harm   
     case SYSTEM_EVENT_ETH_START:
       AWS_LOG(F("\nETH Started"));
       //set eth hostname here
@@ -77,7 +129,7 @@ void WT32_ETH01_event(WiFiEvent_t event)
         {
           AWS_LOG0(F("HALF_DUPLEX, "));
         }
-
+        
         AWS_LOG1(ETH.linkSpeed(), F("Mbps"));
 
         WT32_ETH01_eth_connected = true;
@@ -94,6 +146,7 @@ void WT32_ETH01_event(WiFiEvent_t event)
       AWS_LOG("\nETH Stopped");
       WT32_ETH01_eth_connected = false;
       break;
+#endif  
 
     default:
       break;

@@ -22,19 +22,34 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.2.5
+  Version: 1.3.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.2.3   K Hoang      17/07/2021 Initial porting for WT32_ETH01 (ESP32 + LAN8720). Sync with ESPAsyncWebServer v1.2.3
   1.2.4   K Hoang      02/08/2021 Fix Mbed TLS compile error with ESP32 core v2.0.0-rc1+
-  1.2.5   K Hoang      09/10/2021 Update `platform.ini` and `library.json`
+  1.2.5   K Hoang      09/10/2021 Update `platform.ini` and `library.json`Working only with core v1.0.6-
+  1.3.0   K Hoang      23/10/2021 Making compatible with breaking core v2.0.0+
  *****************************************************************************************************************************/
  
 #ifndef _AsyncWebServer_WT32_ETH01_H_
 #define _AsyncWebServer_WT32_ETH01_H_
 
-#define ASYNC_WEBSERVER_WT32_ETH01_VERSION      "AsyncWebServer_WT32_ETH01 v1.2.5"
+#if !defined(USING_CORE_ESP32_CORE_V200_PLUS)
+  #define USING_CORE_ESP32_CORE_V200_PLUS      true
+  #warning Using code for ESP32 core v2.0.0+
+  #define ASYNC_WEBSERVER_WT32_ETH01_VERSION      "AsyncWebServer_WT32_ETH01 v1.3.0 for core v2.0.0+"
+#else
+  #warning Using code for ESP32 core v1.0.6-
+  #define ASYNC_WEBSERVER_WT32_ETH01_VERSION      "AsyncWebServer_WT32_ETH01 v1.3.0 for core v1.0.6-"
+#endif
+
+#if ESP32
+  #warning Using ESP32 architecture for WebServer_WT32_ETH01
+  #define BOARD_NAME      "WT32-ETH01"
+#else  
+  #error This code is designed to run on ESP32 platform! Please check your Tools->Board setting.
+#endif
 
 #if ESP32
   #warning Using ESP32 architecture for WebServer_WT32_ETH01

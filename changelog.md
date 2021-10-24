@@ -11,6 +11,7 @@
 ## Table of contents
 
 * [Changelog](#changelog)
+  * [Releases v1.3.0](#releases-v130)
   * [Releases v1.2.5](#releases-v125)
   * [Releases v1.2.4](#releases-v124)
   * [Releases v1.2.3](#releases-v123)
@@ -21,7 +22,17 @@
 
 ## Changelog
 
+#### Releases v1.3.0
+
+##### Warning: Releases v1.3.0+ can be used for either ESP32 core v2.0.0+ or v1.0.6-. Default is v2.0.0+ now
+
+1. Making compatible either with breaking core v2.0.0+ or core v1.0.6-
+2. Renew examples
+
+
 ### Releases v1.2.5
+
+##### Warning: Releases v1.2.5- to be used for ESP32 core v1.0.6- only
 
 1. Update `platform.ini` and `library.json` to use original `khoih-prog` instead of `khoih.prog` after PIO fix
 

@@ -33,6 +33,9 @@
   #error This code is designed for WT32_ETH01 to run on ESP32 platform! Please check your Tools->Board setting.
 #endif
 
+// Uncomment to use ESP32 core v1.0.6-
+//#define USING_CORE_ESP32_CORE_V200_PLUS     false
+
 #include <Arduino.h>
 
 #define _ASYNC_WEBSERVER_LOGLEVEL_       4
