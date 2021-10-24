@@ -1587,6 +1587,7 @@ Submit issues to: [AsyncWebServer_WT32_ETH01 issues](https://github.com/khoih-pr
  2. Add more examples.
  3. Add debugging features.
  4. Add Table-of-Contents and Version String
+ 5. Support breaking ESP32 core v2.0.0+ as well as v1.0.6-
  
 
 ---
