@@ -1,6 +1,6 @@
 {
   "name":"AsyncWebServer_WT32_ETH01",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description":"Asynchronous HTTP and WebSocket Server Library for WT32_ETH01 (ESP32 + LAN8720)",
   "keywords":"http, async, async-webserver, websocket, webserver, esp32, wt32-eth01, lan8720, lan8720a",
   "authors": 
@@ -33,5 +33,6 @@
     }
   ],
   "platforms": ["espressif32"],
-  "examples": "examples/*/*/*.ino"
+  "examples": "examples/*/*/*.ino",
+  "headers": "AsyncWebServer_WT32_ETH01.h"
 }

@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.3.0
+  Version: 1.4.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -30,6 +30,7 @@
   1.2.4   K Hoang      02/08/2021 Fix Mbed TLS compile error with ESP32 core v2.0.0-rc1+
   1.2.5   K Hoang      09/10/2021 Update `platform.ini` and `library.json`Working only with core v1.0.6-
   1.3.0   K Hoang      23/10/2021 Making compatible with breaking core v2.0.0+
+  1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
  *****************************************************************************************************************************/
 /*
   Async Response to use with ArduinoJson and AsyncWebServer

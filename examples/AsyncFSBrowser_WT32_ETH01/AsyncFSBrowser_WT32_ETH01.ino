@@ -21,12 +21,9 @@
   
 #endif
 
-// Uncomment to use ESP32 core v1.0.6-
-//#define USING_CORE_ESP32_CORE_V200_PLUS     false
-
 #include <Arduino.h>
 
-#define _ASYNC_WEBSERVER_LOGLEVEL_       4
+#define _ASYNC_WEBSERVER_LOGLEVEL_       2
 
 // Select the IP address according to your local network
 IPAddress myIP(192, 168, 2, 232);

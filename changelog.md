@@ -11,6 +11,7 @@
 ## Table of contents
 
 * [Changelog](#changelog)
+  * [Releases v1.4.0](#releases-v140)
   * [Releases v1.3.0](#releases-v130)
   * [Releases v1.2.5](#releases-v125)
   * [Releases v1.2.4](#releases-v124)
@@ -21,6 +22,14 @@
 ---
 
 ## Changelog
+
+#### Releases v1.4.0
+
+##### Warning: Releases v1.4.0+ can be used and autodetect ESP32 core v2.0.0+ or v1.0.6-.
+
+1. Auto detect ESP32 core
+2. Renew examples
+3. Display compiler `#warning` only when DEBUG_LEVEL is 3+
 
 #### Releases v1.3.0
 

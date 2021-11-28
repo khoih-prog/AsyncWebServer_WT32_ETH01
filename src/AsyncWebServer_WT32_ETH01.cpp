@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.3.0
+  Version: 1.4.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -30,6 +30,7 @@
   1.2.4   K Hoang      02/08/2021 Fix Mbed TLS compile error with ESP32 core v2.0.0-rc1+
   1.2.5   K Hoang      09/10/2021 Update `platform.ini` and `library.json`Working only with core v1.0.6-
   1.3.0   K Hoang      23/10/2021 Making compatible with breaking core v2.0.0+
+  1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
  *****************************************************************************************************************************/
 
 #include "AsyncWebServer_WT32_ETH01.h"
@@ -56,7 +57,7 @@ void WT32_ETH01_event(WiFiEvent_t event)
 {
   switch (event)
   {
-#if USING_CORE_ESP32_CORE_V200_PLUS
+#if ( ( defined(ESP_ARDUINO_VERSION_MAJOR) && (ESP_ARDUINO_VERSION_MAJOR >= 2) ) && ( ARDUINO_ESP32_GIT_VER != 0x46d5afb1 ) )
     // For breaking core v2.0.0
     // Why so strange to define a breaking enum arduino_event_id_t in WiFiGeneric.h
     // compared to the old system_event_id_t, now in tools/sdk/esp32/include/esp_event/include/esp_event_legacy.h

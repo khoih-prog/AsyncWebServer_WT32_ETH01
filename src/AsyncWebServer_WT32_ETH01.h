@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.3.0
+  Version: 1.4.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -30,33 +30,41 @@
   1.2.4   K Hoang      02/08/2021 Fix Mbed TLS compile error with ESP32 core v2.0.0-rc1+
   1.2.5   K Hoang      09/10/2021 Update `platform.ini` and `library.json`Working only with core v1.0.6-
   1.3.0   K Hoang      23/10/2021 Making compatible with breaking core v2.0.0+
+  1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
  *****************************************************************************************************************************/
  
 #ifndef _AsyncWebServer_WT32_ETH01_H_
 #define _AsyncWebServer_WT32_ETH01_H_
 
-#if !defined(USING_CORE_ESP32_CORE_V200_PLUS)
-  #define USING_CORE_ESP32_CORE_V200_PLUS      true
-  #warning Using code for ESP32 core v2.0.0+
-  #define ASYNC_WEBSERVER_WT32_ETH01_VERSION      "AsyncWebServer_WT32_ETH01 v1.3.0 for core v2.0.0+"
-#else
-  #warning Using code for ESP32 core v1.0.6-
-  #define ASYNC_WEBSERVER_WT32_ETH01_VERSION      "AsyncWebServer_WT32_ETH01 v1.3.0 for core v1.0.6-"
-#endif
-
 #if ESP32
-  #warning Using ESP32 architecture for WebServer_WT32_ETH01
-  #define BOARD_NAME      "WT32-ETH01"
-#else  
-  #error This code is designed to run on ESP32 platform! Please check your Tools->Board setting.
-#endif
 
-#if ESP32
-  #warning Using ESP32 architecture for WebServer_WT32_ETH01
+  #if (_ASYNC_WEBSERVER_LOGLEVEL_ > 2 )
+    #warning Using ESP32 architecture for WebServer_WT32_ETH01
+  #endif
+  
   #define BOARD_NAME      "WT32-ETH01"
 #else  
   #error This code is designed for WT32_ETH01 to run on ESP32 platform! Please check your Tools->Board setting.
 #endif
+
+#if ( ( defined(ESP_ARDUINO_VERSION_MAJOR) && (ESP_ARDUINO_VERSION_MAJOR >= 2) ) && ( ARDUINO_ESP32_GIT_VER != 0x46d5afb1 ) )
+  #define USING_CORE_ESP32_CORE_V200_PLUS      true
+  
+  #if (_ASYNC_WEBSERVER_LOGLEVEL_ > 2 )
+    #warning Using code for ESP32 core v2.0.0+ in AsyncWebServer_WT32_ETH01.h
+  #endif
+    
+  #define ASYNC_WEBSERVER_WT32_ETH01_VERSION      "AsyncWebServer_WT32_ETH01 v1.4.0 for core v2.0.0+"
+#else
+
+  #if (_ASYNC_WEBSERVER_LOGLEVEL_ > 2 )
+    #warning Using code for ESP32 core v1.0.6- in AsyncWebServer_WT32_ETH01.h
+  #endif
+  
+  #define ASYNC_WEBSERVER_WT32_ETH01_VERSION      "AsyncWebServer_WT32_ETH01 v1.4.0 for core v1.0.6-"
+#endif
+
+
 
 #include "Arduino.h"
 
