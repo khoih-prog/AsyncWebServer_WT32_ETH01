@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.4.0
+  Version: 1.4.1
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -31,6 +31,7 @@
   1.2.5   K Hoang      09/10/2021 Update `platform.ini` and `library.json`Working only with core v1.0.6-
   1.3.0   K Hoang      23/10/2021 Making compatible with breaking core v2.0.0+
   1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
+  1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
  *****************************************************************************************************************************/
  
 #ifndef _AsyncWebServer_WT32_ETH01_H_
@@ -54,14 +55,14 @@
     #warning Using code for ESP32 core v2.0.0+ in AsyncWebServer_WT32_ETH01.h
   #endif
     
-  #define ASYNC_WEBSERVER_WT32_ETH01_VERSION      "AsyncWebServer_WT32_ETH01 v1.4.0 for core v2.0.0+"
+  #define ASYNC_WEBSERVER_WT32_ETH01_VERSION      "AsyncWebServer_WT32_ETH01 v1.4.1 for core v2.0.0+"
 #else
 
   #if (_ASYNC_WEBSERVER_LOGLEVEL_ > 2 )
     #warning Using code for ESP32 core v1.0.6- in AsyncWebServer_WT32_ETH01.h
   #endif
   
-  #define ASYNC_WEBSERVER_WT32_ETH01_VERSION      "AsyncWebServer_WT32_ETH01 v1.4.0 for core v1.0.6-"
+  #define ASYNC_WEBSERVER_WT32_ETH01_VERSION      "AsyncWebServer_WT32_ETH01 v1.4.1 for core v1.0.6-"
 #endif
 
 

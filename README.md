@@ -100,7 +100,7 @@
 
 #### Important notes
 
-ESP32 Core v2.0.0 introduces new `arduino_event_id_t` enum, breaking almost all `WT32_ETH01` codes written for core v1.0.6-.
+ESP32 Core v2.0.0+ introduces new `arduino_event_id_t` enum, breaking almost all `WT32_ETH01` codes written for core v1.0.6-.
 
 It's really strange to define that breaking enum `arduino_event_id_t` in [**WiFiGeneric.h**#L36-L78](https://github.com/espressif/arduino-esp32/blob/master/libraries/WiFi/src/WiFiGeneric.h#L36-L78), compared to the old `system_event_id_t`, now placed in [**esp_event_legacy.h**#L29-L63](https://github.com/espressif/arduino-esp32/blob/master/tools/sdk/esp32/include/esp_event/include/esp_event_legacy.h#L29-L63)
 
@@ -115,7 +115,7 @@ To use with core v1.0.6-, just define in your sketch
 #define USING_CORE_ESP32_CORE_V200_PLUS       false
 ```
 
-- Releases v1.4.0 can be used for either ESP32 core v2.0.0+ or v1.0.6-. **Autodetect core**
+- Releases v1.4.0+ can be used for either ESP32 core v2.0.0+ or v1.0.6-. **Autodetect core**
 
 ---
 
@@ -1354,7 +1354,7 @@ build_flags =
 
 #include <Arduino.h>
 
-#define _ASYNC_WEBSERVER_LOGLEVEL_       4
+#define _ASYNC_WEBSERVER_LOGLEVEL_       2
 
 // Select the IP address according to your local network
 IPAddress myIP(192, 168, 2, 232);
@@ -1458,6 +1458,9 @@ void setup(void)
   Serial.print(F(" with ")); Serial.println(SHIELD_TYPE);
   Serial.println(ASYNC_WEBSERVER_WT32_ETH01_VERSION);
 
+  // To be called before ETH.begin()
+  WT32_ETH01_onEvent();
+
   //bool begin(uint8_t phy_addr=ETH_PHY_ADDR, int power=ETH_PHY_POWER, int mdc=ETH_PHY_MDC, int mdio=ETH_PHY_MDIO, 
   //           eth_phy_type_t type=ETH_PHY_TYPE, eth_clock_mode_t clk_mode=ETH_CLK_MODE);
   //ETH.begin(ETH_PHY_ADDR, ETH_PHY_POWER, ETH_PHY_MDC, ETH_PHY_MDIO, ETH_PHY_TYPE, ETH_CLK_MODE);
@@ -1466,8 +1469,6 @@ void setup(void)
   // Static IP, leave without this line to get IP via DHCP
   //bool config(IPAddress local_ip, IPAddress gateway, IPAddress subnet, IPAddress dns1 = 0, IPAddress dns2 = 0);
   ETH.config(myIP, myGW, mySN, myDNS);
-
-  WT32_ETH01_onEvent();
 
   WT32_ETH01_waitForConnect();
   
@@ -1517,7 +1518,7 @@ Following are debug terminal output and screen shots when running example [Async
 
 ```
 Starting AsyncMultiWebServer_WT32_ETH01 on WT32-ETH01 with ETH_PHY_LAN8720
-AsyncWebServer_WT32_ETH01 v1.4.0 for core v2.0.0+
+AsyncWebServer_WT32_ETH01 v1.4.1 for core v2.0.0+
 ETH MAC: A8:03:2A:A1:61:73, IPv4: 192.168.2.232
 FULL_DUPLEX, 100Mbps
 
