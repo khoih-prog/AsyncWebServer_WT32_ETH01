@@ -6,7 +6,8 @@
 [![GitHub issues](https://img.shields.io/github/issues/khoih-prog/AsyncWebServer_WT32_ETH01.svg)](http://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/issues)
 
 
-<a href="https://www.buymeacoffee.com/khoihprog6" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Donate to my libraries using BuyMeACoffee" style="height: 50px !important;width: 181px !important;" ></a>
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" style="height: 20px !important;width: 200px !important;" ></a>
 
 
 ---
@@ -110,16 +111,16 @@ It's really strange to define that breaking enum `arduino_event_id_t` in [**WiFi
 
 It's better to preserve the old enum order and just adding new items **to do no harm to pre-2.0.0 codes**
 
-- Releases v1.2.5- to be used for ESP32 core v1.0.6- only
-- Releases v1.3.0+ can be used for either ESP32 core v2.0.0+ or v1.0.6-. **Default is using core v2.0.0+**
+- Releases `v1.2.5-` to be used for ESP32 core `v1.0.6-` only
+- Releases `v1.3.0+` can be used for either ESP32 core `v2.0.0+` or `v1.0.6-`. **Default is using core v2.0.0+**
 
-To use with core v1.0.6-, just define in your sketch
+To use with core `v1.0.6-`, just define in your sketch
 
 ```
 #define USING_CORE_ESP32_CORE_V200_PLUS       false
 ```
 
-- Releases v1.4.0+ can be used for either ESP32 core v2.0.0+ or v1.0.6-. **Autodetect core**
+- Releases `v1.4.0+` can be used for either ESP32 core `v2.0.0+` or `v1.0.6-`. **Autodetect core**
 
 ---
 
@@ -161,7 +162,7 @@ to apply the better and faster **asynchronous** feature of the **powerful** [ESP
 ## Prerequisites
 
  1. [`Arduino IDE 1.8.19+` for Arduino](https://github.com/arduino/Arduino). [![GitHub release](https://img.shields.io/github/release/arduino/Arduino.svg)](https://github.com/arduino/Arduino/releases/latest)
- 2. [`ESP32 Core 2.0.2+`](https://github.com/espressif/arduino-esp32) for ESP32-based WT32_ETH01 boards using this library's release `v1.3.0+`. ESP32 Latest Core [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
+ 2. [`ESP32 Core 2.0.5+`](https://github.com/espressif/arduino-esp32) for ESP32-based WT32_ETH01 boards using this library's release `v1.3.0+`. ESP32 Latest Core [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
  3. [`ESP32 Core 1.0.6-`](https://github.com/espressif/arduino-esp32) for ESP32-based WT32_ETH01 boards using this library's release `v1.2.5-`. ESP32 Latest Core [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
  
  4. [`AsyncTCP library v1.1.1+`](https://github.com/me-no-dev/AsyncTCP).
@@ -177,15 +178,15 @@ The best and easiest way is to use `Arduino Library Manager`. Search for `AsyncW
 ### Manual Install
 
 1. Navigate to [AsyncWebServer_WT32_ETH01](https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01) page.
-2. Download the latest release `AsyncWebServer_WT32_ETH01-master.zip`.
-3. Extract the zip file to `AsyncWebServer_WT32_ETH01-master` directory 
-4. Copy the whole `AsyncWebServer_WT32_ETH01-master` folder to Arduino libraries' directory such as `~/Arduino/libraries/`.
+2. Download the latest release `AsyncWebServer_WT32_ETH01-main.zip`.
+3. Extract the zip file to `AsyncWebServer_WT32_ETH01-main` directory 
+4. Copy the whole `AsyncWebServer_WT32_ETH01-main` folder to Arduino libraries' directory such as `~/Arduino/libraries/`.
 
 ### VS Code & PlatformIO:
 
 1. Install [VS Code](https://code.visualstudio.com/)
 2. Install [PlatformIO](https://platformio.org/platformio-ide)
-3. Install [**AsyncWebServer_WT32_ETH01** library](https://platformio.org/lib/show/12568/AsyncWebServer_WT32_ETH01) by using [Library Manager](https://platformio.org/lib/show/12568/AsyncWebServer_WT32_ETH01/installation). Search for **AsyncWebServer_WT32_ETH01** in [Platform.io Author's Libraries](https://platformio.org/lib/search?query=author:%22Khoi%20Hoang%22)
+3. Install [**AsyncWebServer_WT32_ETH01** library](https://registry.platformio.org/libraries/khoih-prog/AsyncWebServer_WT32_ETH01) by using [Library Manager](https://registry.platformio.org/libraries/khoih-prog/AsyncWebServer_WT32_ETH01/installation). Search for **AsyncWebServer_WT32_ETH01** in [Platform.io Author's Libraries](https://platformio.org/lib/search?query=author:%22Khoi%20Hoang%22)
 4. Use included [platformio.ini](platformio/platformio.ini) file from examples to ensure that all dependent libraries will installed automatically. Please visit documentation for the other options and examples at [Project Configuration File](https://docs.platformio.org/page/projectconf.html)
 
 
@@ -206,54 +207,54 @@ The best and easiest way is to use `Arduino Library Manager`. Search for `AsyncW
 ### The Async Web server
 
 - Listens for connections
-- Wraps the new clients into ```Request```
+- Wraps the new clients into `Request`
 - Keeps track of clients and cleans memory
-- Manages ```Rewrites``` and apply them on the request url
-- Manages ```Handlers``` and attaches them to Requests
+- Manages `Rewrites` and apply them on the request url
+- Manages `Handlers` and attaches them to Requests
 
 ### Request Life Cycle
 
 - TCP connection is received by the server
-- The connection is wrapped inside ```Request``` object
+- The connection is wrapped inside `Request` object
 - When the request head is received (type, url, get params, http version and host),
-  the server goes through all ```Rewrites``` (in the order they were added) to rewrite the url and inject query parameters,
-  next, it goes through all attached ```Handlers```(in the order they were added) trying to find one
-  that ```canHandle``` the given request. If none are found, the default(catch-all) handler is attached.
-- The rest of the request is received, calling the ```handleUpload``` or ```handleBody``` methods of the ```Handler``` if they are needed (POST+File/Body)
-- When the whole request is parsed, the result is given to the ```handleRequest``` method of the ```Handler``` and is ready to be responded to
-- In the ```handleRequest``` method, to the ```Request``` is attached a ```Response``` object (see below) that will serve the response data back to the client
-- When the ```Response``` is sent, the client is closed and freed from the memory
+  the server goes through all `Rewrites` (in the order they were added) to rewrite the url and inject query parameters,
+  next, it goes through all attached `Handlers` (in the order they were added) trying to find one
+  that `canHandle` the given request. If none are found, the default(catch-all) handler is attached.
+- The rest of the request is received, calling the `handleUpload` or `handleBody` methods of the `Handler` if they are needed (POST+File/Body)
+- When the whole request is parsed, the result is given to the `handleRequest` method of the `Handler` and is ready to be responded to
+- In the `handleRequest` method, to the `Request` is attached a `Response` object (see below) that will serve the response data back to the client
+- When the `Response` is sent, the client is closed and freed from the memory
 
 ### Rewrites and how do they work
 
-- The ```Rewrites``` are used to rewrite the request url and/or inject get parameters for a specific request url path.
-- All ```Rewrites``` are evaluated on the request in the order they have been added to the server.
-- The ```Rewrite``` will change the request url only if the request url (excluding get parameters) is fully match
-  the rewrite url, and when the optional ```Filter``` callback return true.
-- Setting a ```Filter``` to the ```Rewrite``` enables to control when to apply the rewrite, decision can be based on
+- The `Rewrites` are used to rewrite the request url and/or inject get parameters for a specific request url path.
+- All `Rewrites` are evaluated on the request in the order they have been added to the server.
+- The `Rewrite` will change the request url only if the request url (excluding get parameters) is fully match
+  the rewrite url, and when the optional `Filter` callback return true.
+- Setting a `Filter` to the `Rewrite` enables to control when to apply the rewrite, decision can be based on
   request url, http version, request host/port/target host, get parameters or the request client's localIP or remoteIP.
-- The ```Rewrite``` can specify a target url with optional get parameters, e.g. ```/to-url?with=params```
+- The `Rewrite` can specify a target url with optional get parameters, e.g. `/to-url?with=params`
 
 ### Handlers and how do they work
 
-- The ```Handlers``` are used for executing specific actions to particular requests
-- One ```Handler``` instance can be attached to any request and lives together with the server
-- Setting a ```Filter``` to the ```Handler``` enables to control when to apply the handler, decision can be based on
+- The `Handlers` are used for executing specific actions to particular requests
+- One `Handler` instance can be attached to any request and lives together with the server
+- Setting a `Filter` to the `Handler` enables to control when to apply the handler, decision can be based on
   request url, http version, request host/port/target host, get parameters or the request client's localIP or remoteIP.
-- The ```canHandle``` method is used for handler specific control on whether the requests can be handled
-  and for declaring any interesting headers that the ```Request``` should parse. Decision can be based on request
+- The `canHandle` method is used for handler specific control on whether the requests can be handled
+  and for declaring any interesting headers that the `Request` should parse. Decision can be based on request
   method, request url, http version, request host/port/target host and get parameters
-- Once a ```Handler``` is attached to given ```Request``` (```canHandle``` returned true)
-  that ```Handler``` takes care to receive any file/data upload and attach a ```Response```
-  once the ```Request``` has been fully parsed
-- ```Handlers``` are evaluated in the order they are attached to the server. The ```canHandle``` is called only
-  if the ```Filter``` that was set to the ```Handler``` return true.
-- The first ```Handler``` that can handle the request is selected, not further ```Filter``` and ```canHandle``` are called.
+- Once a `Handler` is attached to given `Request` (`canHandle` returned true)
+  that `Handler` takes care to receive any file/data upload and attach a `Response`
+  once the `Request` has been fully parsed
+- `Handlers` are evaluated in the order they are attached to the server. The `canHandle` is called only
+  if the `Filter` that was set to the `Handler` return true.
+- The first `Handler` that can handle the request is selected, not further `Filter` and `canHandle` are called.
 
 ### Responses and how do they work
 
-- The ```Response``` objects are used to send the response data back to the client
-- The ```Response``` object lives with the ```Request``` and is freed on end or disconnect
+- The `Response` objects are used to send the response data back to the client
+- The `Response` object lives with the `Request` and is freed on end or disconnect
 - Different techniques are used depending on the response type to send the data in packets
   returning back almost immediately and sending the next packet when this one is received.
   Any time in between is spent to run the user loop and handle other network packets
@@ -265,7 +266,7 @@ The best and easiest way is to use `Arduino Library Manager`. Search for `AsyncW
 - AsyncWebServer_WT32_ETH01 contains simple template processing engine.
 - Template processing can be added to most response types.
 - Currently it supports only replacing template placeholders with actual values. No conditional processing, cycles, etc.
-- Placeholders are delimited with ```%``` symbols. Like this: ```%TEMPLATE_PLACEHOLDER%```.
+- Placeholders are delimited with `%` symbols. Like this: `%TEMPLATE_PLACEHOLDER%`.
 - It works by extracting placeholder name from response text and passing it to user provided function which should return actual value to be used instead of placeholder.
 - Since it's user provided function, it is possible for library users to implement conditional processing and cycles themselves.
 - Since it's impossible to know the actual response size after template processing step in advance (and, therefore, to include it in response headers), the response becomes [chunked](#chunked-response).
@@ -719,6 +720,7 @@ request->send(response);
 ---
 
 ## Param Rewrite With Matching
+
 It is possible to rewrite the request url with parameter matchg. Here is an example with one parameter:
 Rewrite for example "/radio/{frequence}" -> "/radio?f={frequence}"
 
@@ -812,6 +814,7 @@ request->send("text/plain", 0, [](uint8_t *buffer, size_t maxLen, size_t index) 
   return mySource.read(buffer, maxLen);
 });
 ```
+
 ---
 
 ## Async WebSocket Plugin
@@ -1083,7 +1086,7 @@ if (!!window.EventSource)
 Server goes through handlers in same order as they were added. You can't simple add handler with same path to override them.
 To remove handler:
 
-```arduino
+```cpp
 // save callback for particular URL path
 auto handler = server.on("/some/path", [](AsyncWebServerRequest *request){
   //do something useful
@@ -1158,7 +1161,7 @@ void handleNotFound(AsyncWebServerRequest *request)
   request->send(404, "text/plain", message);
 }
 
-void setup(void)
+void setup()
 {
   Serial.begin(115200);
   while (!Serial);
@@ -1200,7 +1203,7 @@ void setup(void)
   Serial.println(ETH.localIP());
 }
 
-void loop(void)
+void loop()
 {
 }
 ```
@@ -1306,6 +1309,7 @@ For example we want a `sensorId` parameter in a route rule to match only a integ
       String sensorId = request->pathArg(0);
   });
 ```
+
 *NOTE*: All regex patterns starts with `^` and ends with `$`
 
 To enable the `Path variable` support, you have to define the buildflag `-DASYNCWEBSERVER_REGEX`.
@@ -1318,11 +1322,13 @@ For Arduino IDE create/update `platform.local.txt`:
 `Linux`: ~/.arduino15/packages/`{espxxxx}`/hardware/`{espxxxx}`/`{version}`/platform.local.txt
 
 Add/Update the following line:
+
 ```
   compiler.cpp.extra_flags=-DDASYNCWEBSERVER_REGEX
 ```
 
 For platformio modify `platformio.ini`:
+
 ```ini
 [env:myboard]
 build_flags = 
@@ -1351,158 +1357,8 @@ build_flags =
 
 ### Example [Async_AdvancedWebServer](examples/Async_AdvancedWebServer)
 
-```cpp
-#if !( defined(ESP32) )
-  #error This code is designed for WT32_ETH01 to run on ESP32 platform! Please check your Tools->Board setting.
-#endif
+https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/c110c9dc0fd1b0158eb9f454f5a366fa193b8538/examples/Async_AdvancedWebServer/Async_AdvancedWebServer.ino#L41-L190
 
-#include <Arduino.h>
-
-#define _ASYNC_WEBSERVER_LOGLEVEL_       2
-
-// Select the IP address according to your local network
-IPAddress myIP(192, 168, 2, 232);
-IPAddress myGW(192, 168, 2, 1);
-IPAddress mySN(255, 255, 255, 0);
-
-// Google DNS Server IP
-IPAddress myDNS(8, 8, 8, 8);
-
-#include <AsyncTCP.h>
-
-#include <AsyncWebServer_WT32_ETH01.h>
-
-AsyncWebServer    server(80);
-
-int reqCount = 0;                // number of requests received
-
-void handleRoot(AsyncWebServerRequest *request)
-{
-#define BUFFER_SIZE     400
-
-  char temp[BUFFER_SIZE];
-  int sec = millis() / 1000;
-  int min = sec / 60;
-  int hr = min / 60;
-  int day = hr / 24;
-
-  snprintf(temp, BUFFER_SIZE - 1,
-           "<html>\
-<head>\
-<meta http-equiv='refresh' content='5'/>\
-<title>AsyncWebServer-%s</title>\
-<style>\
-body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
-</style>\
-</head>\
-<body>\
-<h2>AsyncWebServer_WT32_ETH01!</h2>\
-<h3>running on %s</h3>\
-<p>Uptime: %d d %02d:%02d:%02d</p>\
-<img src=\"/test.svg\" />\
-</body>\
-</html>", BOARD_NAME, BOARD_NAME, day, hr % 24, min % 60, sec % 60);
-
-  request->send(200, "text/html", temp);
-}
-
-void handleNotFound(AsyncWebServerRequest *request)
-{
-  String message = "File Not Found\n\n";
-
-  message += "URI: ";
-  message += request->url();
-  message += "\nMethod: ";
-  message += (request->method() == HTTP_GET) ? "GET" : "POST";
-  message += "\nArguments: ";
-  message += request->args();
-  message += "\n";
-
-  for (uint8_t i = 0; i < request->args(); i++)
-  {
-    message += " " + request->argName(i) + ": " + request->arg(i) + "\n";
-  }
-
-  request->send(404, "text/plain", message);
-}
-
-void drawGraph(AsyncWebServerRequest *request)
-{
-  String out;
-
-  out.reserve(3000);
-  char temp[70];
-  
-  out += "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"310\" height=\"150\">\n";
-  out += "<rect width=\"310\" height=\"150\" fill=\"rgb(250, 230, 210)\" stroke-width=\"2\" stroke=\"rgb(0, 0, 0)\" />\n";
-  out += "<g stroke=\"blue\">\n";
-  int y = rand() % 130;
-
-  for (int x = 10; x < 300; x += 10)
-  {
-    int y2 = rand() % 130;
-    sprintf(temp, "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke-width=\"2\" />\n", x, 140 - y, x + 10, 140 - y2);
-    out += temp;
-    y = y2;
-  }
-  out += "</g>\n</svg>\n";
-
-  request->send(200, "image/svg+xml", out);
-}
-
-
-void setup(void)
-{
-  Serial.begin(115200);
-  while (!Serial);
-
-  delay(200);
-
-  Serial.print(F("\nStart AsyncSimpleServer_WT32_ETH01 on ")); Serial.print(BOARD_NAME);
-  Serial.print(F(" with ")); Serial.println(SHIELD_TYPE);
-  Serial.println(ASYNC_WEBSERVER_WT32_ETH01_VERSION);
-
-  // To be called before ETH.begin()
-  WT32_ETH01_onEvent();
-
-  //bool begin(uint8_t phy_addr=ETH_PHY_ADDR, int power=ETH_PHY_POWER, int mdc=ETH_PHY_MDC, int mdio=ETH_PHY_MDIO, 
-  //           eth_phy_type_t type=ETH_PHY_TYPE, eth_clock_mode_t clk_mode=ETH_CLK_MODE);
-  //ETH.begin(ETH_PHY_ADDR, ETH_PHY_POWER, ETH_PHY_MDC, ETH_PHY_MDIO, ETH_PHY_TYPE, ETH_CLK_MODE);
-  ETH.begin(ETH_PHY_ADDR, ETH_PHY_POWER);
-
-  // Static IP, leave without this line to get IP via DHCP
-  //bool config(IPAddress local_ip, IPAddress gateway, IPAddress subnet, IPAddress dns1 = 0, IPAddress dns2 = 0);
-  ETH.config(myIP, myGW, mySN, myDNS);
-
-  WT32_ETH01_waitForConnect();
-  
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest * request)
-  {
-    handleRoot(request);
-  });
-
-  server.on("/test.svg", HTTP_GET, [](AsyncWebServerRequest * request)
-  {
-    drawGraph(request);
-  });
-
-  server.on("/inline", [](AsyncWebServerRequest * request)
-  {
-    request->send(200, "text/plain", "This works as well");
-  });
-
-  server.onNotFound(handleNotFound);
-
-  server.begin();
-
-  Serial.print(F("HTTP EthernetWebServer is @ IP : "));
-  Serial.println(ETH.localIP());
-}
-
-void loop(void)
-{
-}
-```
 
 You can access the Async Advanced WebServer @ the server IP
 
@@ -1522,7 +1378,7 @@ Following are debug terminal output and screen shots when running example [Async
 
 ```
 Starting AsyncMultiWebServer_WT32_ETH01 on WT32-ETH01 with ETH_PHY_LAN8720
-AsyncWebServer_WT32_ETH01 v1.4.1 for core v2.0.0+
+AsyncWebServer_WT32_ETH01 v1.5.0 for core v2.0.0+
 ETH MAC: A8:03:2A:A1:61:73, IPv4: 192.168.2.232
 FULL_DUPLEX, 100Mbps
 
@@ -1594,7 +1450,7 @@ Submit issues to: [AsyncWebServer_WT32_ETH01 issues](https://github.com/khoih-pr
  5. Support breaking ESP32 core v2.0.0+ as well as v1.0.6-
  6. Auto detect ESP32 core v1.0.6- or v2.0.0+ to use correct settings
  7. Display compiler `#warning` only when DEBUG_LEVEL is 3+
- 
+ 8. Fix AsyncWebSocket bug
 
 ---
 ---

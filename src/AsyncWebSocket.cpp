@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.4.1
+  Version: 1.5.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -32,6 +32,7 @@
   1.3.0   K Hoang      23/10/2021 Making compatible with breaking core v2.0.0+
   1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
   1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
+  1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
  *****************************************************************************************************************************/
  
 #include "Arduino.h"
@@ -39,20 +40,8 @@
 
 #include <libb64/cencode.h>
 
-extern "C"
-{
-  typedef struct
-  {
-    uint32_t state[5];
-    uint32_t count[2];
-    unsigned char buffer[64];
-  } SHA1_CTX;
-
-  void SHA1Transform(uint32_t state[5], const unsigned char buffer[64]);
-  void SHA1Init(SHA1_CTX* context);
-  void SHA1Update(SHA1_CTX* context, const unsigned char* data, uint32_t len);
-  void SHA1Final(unsigned char digest[20], SHA1_CTX* context);
-}
+#include "Crypto/sha1.h"
+#include "Crypto/Hash.h"
 
 #define MAX_PRINTF_LEN 64
 
@@ -1653,13 +1642,13 @@ AsyncWebSocket::AsyncWebSocketClientLinkedList AsyncWebSocket::getClients() cons
    Authentication code from https://github.com/Links2004/arduinoWebSockets/blob/master/src/WebSockets.cpp#L480
 */
 
-AsyncWebSocketResponse::AsyncWebSocketResponse(const String& key, AsyncWebSocket *server)
+AsyncWebSocketResponse::AsyncWebSocketResponse(const String & key, AsyncWebSocket * server)
 {
   _server = server;
   _code = 101;
   _sendContentLength = false;
 
-  uint8_t * hash = (uint8_t*)malloc(20);
+  uint8_t * hash = (uint8_t*) malloc(HASH_BUFFER_SIZE);
 
   if (hash == NULL)
   {
@@ -1676,22 +1665,28 @@ AsyncWebSocketResponse::AsyncWebSocketResponse(const String& key, AsyncWebSocket
     return;
   }
 
-  (String&)key += WS_STR_UUID;
-  SHA1_CTX ctx;
-  SHA1Init(&ctx);
-  SHA1Update(&ctx, (const unsigned char*)key.c_str(), key.length());
-  SHA1Final(hash, &ctx);
+  sha1_context _ctx;
+
+  (String&) key += WS_STR_UUID;
+
+  sha1_starts(&_ctx);
+  sha1_update(&_ctx, (const unsigned char*) key.c_str(), key.length());
+  sha1_finish(&_ctx, hash);
+  //////
 
   base64_encodestate _state;
   base64_init_encodestate(&_state);
-  int len = base64_encode_block((const char *) hash, 20, buffer, &_state);
+  int len = base64_encode_block((const char *) hash, HASH_BUFFER_SIZE, buffer, &_state);
   len = base64_encode_blockend((buffer + len), &_state);
+
   addHeader(WS_STR_CONNECTION, WS_STR_UPGRADE);
   addHeader(WS_STR_UPGRADE, "websocket");
   addHeader(WS_STR_ACCEPT, buffer);
+
   free(buffer);
   free(hash);
 }
+
 
 void AsyncWebSocketResponse::_respond(AsyncWebServerRequest *request)
 {

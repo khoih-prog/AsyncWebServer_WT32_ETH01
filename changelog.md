@@ -11,6 +11,7 @@
 ## Table of contents
 
 * [Changelog](#changelog)
+  * [Releases v1.5.0](#releases-v150)
   * [Releases v1.4.1](#releases-v141)
   * [Releases v1.4.0](#releases-v140)
   * [Releases v1.3.0](#releases-v130)
@@ -23,6 +24,10 @@
 ---
 
 ## Changelog
+
+#### Releases v1.5.0
+
+1. Fix AsyncWebSocket bug
 
 #### Releases v1.4.1
 
