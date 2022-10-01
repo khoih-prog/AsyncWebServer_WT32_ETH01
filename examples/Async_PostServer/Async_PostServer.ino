@@ -119,13 +119,13 @@ void handleNotFound(AsyncWebServerRequest *request)
   digitalWrite(led, 0);
 }
 
-void setup(void)
+void setup()
 {
   pinMode(led, OUTPUT);
   digitalWrite(led, 0);
 
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
   delay(200);
 
@@ -172,6 +172,6 @@ void setup(void)
   Serial.println(ETH.localIP());
 }
 
-void loop(void)
+void loop()
 {
 }
