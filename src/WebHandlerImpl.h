@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.5.0
+  Version: 1.6.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,6 +33,7 @@
   1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
   1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
+  1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
  *****************************************************************************************************************************/
  
 #ifndef ASYNCWEBSERVERHANDLERIMPL_H_
@@ -48,6 +49,8 @@
 #include <time.h>
 
 #include "AsyncWebServer_WT32_ETH01_Debug.h"
+
+/////////////////////////////////////////////////
 
 class AsyncStaticWebHandler: public AsyncWebHandler
 {
@@ -88,6 +91,8 @@ class AsyncStaticWebHandler: public AsyncWebHandler
     }
 };
 
+/////////////////////////////////////////////////
+
 class AsyncCallbackWebHandler: public AsyncWebHandler
 {
   private:
@@ -103,35 +108,46 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
   public:
     AsyncCallbackWebHandler() : _uri(), _method(HTTP_ANY), _onRequest(NULL), _onUpload(NULL), _onBody(NULL), _isRegex(false) {}
 
-    void setUri(const String& uri)
+    /////////////////////////////////////////////////
+
+    inline void setUri(const String& uri)
     {
       _uri = uri;
       _isRegex = uri.startsWith("^") && uri.endsWith("$");
     }
 
-    void setMethod(WebRequestMethodComposite method)
+    /////////////////////////////////////////////////
+
+    inline void setMethod(WebRequestMethodComposite method)
     {
       _method = method;
     }
 
-    void onRequest(ArRequestHandlerFunction fn)
+    /////////////////////////////////////////////////
+    
+    inline void onRequest(ArRequestHandlerFunction fn)
     {
       _onRequest = fn;
     }
 
-    void onUpload(ArUploadHandlerFunction fn)
+    /////////////////////////////////////////////////
+
+    inline void onUpload(ArUploadHandlerFunction fn)
     {
       _onUpload = fn;
     }
 
-    void onBody(ArBodyHandlerFunction fn)
+    /////////////////////////////////////////////////
+
+    inline void onBody(ArBodyHandlerFunction fn)
     {
       _onBody = fn;
     }
 
+    /////////////////////////////////////////////////
+
     virtual bool canHandle(AsyncWebServerRequest *request) override final
     {
-
       if (!_onRequest)
         return false;
 
@@ -184,6 +200,8 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
       return true;
     }
 
+    /////////////////////////////////////////////////
+
     virtual void handleRequest(AsyncWebServerRequest *request) override final
     {
       if ((_username != "" && _password != "") && !request->authenticate(_username.c_str(), _password.c_str()))
@@ -194,6 +212,8 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
       else
         request->send(500);
     }
+
+    /////////////////////////////////////////////////
     
     virtual void handleUpload(AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final) override final 
     {
@@ -203,6 +223,8 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
       if (_onUpload)
         _onUpload(request, filename, index, data, len, final);
     }
+
+    /////////////////////////////////////////////////
     
     virtual void handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) override final 
     {
@@ -212,6 +234,8 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
       if (_onBody)
         _onBody(request, data, len, index, total);
     }
+
+    /////////////////////////////////////////////////
     
     virtual bool isRequestHandlerTrivial() override final 
     {

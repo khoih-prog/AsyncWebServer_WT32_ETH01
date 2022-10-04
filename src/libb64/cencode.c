@@ -12,7 +12,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01
   Licensed under GPLv3 license
  
-  Version: 1.5.0
+  Version: 1.6.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -23,11 +23,14 @@
   1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
   1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
+  1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
  *****************************************************************************************************************************/
 
 #include "cencode.h"
 
 const int CHARS_PER_LINE = 72;
+
+/////////////////////////////////////////////////
 
 void base64_init_encodestate(base64_encodestate* state_in)
 {
@@ -35,6 +38,8 @@ void base64_init_encodestate(base64_encodestate* state_in)
   state_in->result = 0;
   state_in->stepcount = 0;
 }
+
+/////////////////////////////////////////////////
 
 char base64_encode_value(char value_in)
 {
@@ -45,6 +50,8 @@ char base64_encode_value(char value_in)
 
   return encoding[(unsigned int)value_in];
 }
+
+/////////////////////////////////////////////////
 
 int base64_encode_block(const char* plaintext_in, int length_in, char* code_out, base64_encodestate* state_in)
 {
@@ -120,6 +127,8 @@ int base64_encode_block(const char* plaintext_in, int length_in, char* code_out,
   return codechar - code_out;
 }
 
+/////////////////////////////////////////////////
+
 int base64_encode_blockend(char* code_out, base64_encodestate* state_in)
 {
   char* codechar = code_out;
@@ -143,6 +152,8 @@ int base64_encode_blockend(char* code_out, base64_encodestate* state_in)
 
   return codechar - code_out;
 }
+
+/////////////////////////////////////////////////
 
 int base64_encode_chars(const char* plaintext_in, int length_in, char* code_out)
 {

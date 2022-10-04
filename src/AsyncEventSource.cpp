@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.5.0
+  Version: 1.6.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,10 +33,13 @@
   1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
   1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
+  1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
  *****************************************************************************************************************************/
  
 #include "Arduino.h"
 #include "AsyncEventSource.h"
+
+/////////////////////////////////////////////////
 
 static String generateEventMessage(const char *message, const char *event, uint32_t id, uint32_t reconnect)
 {
@@ -151,6 +154,9 @@ static String generateEventMessage(const char *message, const char *event, uint3
   return ev;
 }
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
 // Message
 
 AsyncEventSourceMessage::AsyncEventSourceMessage(const char * data, size_t len)
@@ -169,15 +175,19 @@ AsyncEventSourceMessage::AsyncEventSourceMessage(const char * data, size_t len)
   }
 }
 
+/////////////////////////////////////////////////
+
 AsyncEventSourceMessage::~AsyncEventSourceMessage()
 {
   if (_data != NULL)
     free(_data);
 }
 
+/////////////////////////////////////////////////
+
 size_t AsyncEventSourceMessage::ack(size_t len, uint32_t time)
 {
-  (void)time;
+  WT32_ETH01_AWS_UNUSED(time);
 
   // If the whole message is now acked...
   if (_acked + len > _len)
@@ -193,6 +203,8 @@ size_t AsyncEventSourceMessage::ack(size_t len, uint32_t time)
 
   return 0;
 }
+
+/////////////////////////////////////////////////
 
 size_t AsyncEventSourceMessage::send(AsyncClient *client)
 {
@@ -213,6 +225,9 @@ size_t AsyncEventSourceMessage::send(AsyncClient *client)
   return sent;
 }
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
 // Client
 
 AsyncEventSourceClient::AsyncEventSourceClient(AsyncWebServerRequest *request, AsyncEventSource *server)
@@ -232,13 +247,13 @@ AsyncEventSourceClient::AsyncEventSourceClient(AsyncWebServerRequest *request, A
 
   _client->onAck([](void *r, AsyncClient * c, size_t len, uint32_t time)
   {
-    (void)c;
+    WT32_ETH01_AWS_UNUSED(c);
     ((AsyncEventSourceClient*)(r))->_onAck(len, time);
   }, this);
 
   _client->onPoll([](void *r, AsyncClient * c)
   {
-    (void)c;
+    WT32_ETH01_AWS_UNUSED(c);
     ((AsyncEventSourceClient*)(r))->_onPoll();
   }, this);
 
@@ -260,11 +275,15 @@ AsyncEventSourceClient::AsyncEventSourceClient(AsyncWebServerRequest *request, A
   delete request;
 }
 
+/////////////////////////////////////////////////
+
 AsyncEventSourceClient::~AsyncEventSourceClient()
 {
   _messageQueue.free();
   close();
 }
+
+/////////////////////////////////////////////////
 
 void AsyncEventSourceClient::_queueMessage(AsyncEventSourceMessage *dataMessage)
 {
@@ -274,6 +293,7 @@ void AsyncEventSourceClient::_queueMessage(AsyncEventSourceMessage *dataMessage)
   if (!connected())
   {
     delete dataMessage;
+    
     return;
   }
 
@@ -292,6 +312,8 @@ void AsyncEventSourceClient::_queueMessage(AsyncEventSourceMessage *dataMessage)
     _runQueue();
 }
 
+/////////////////////////////////////////////////
+
 void AsyncEventSourceClient::_onAck(size_t len, uint32_t time)
 {
   while (len && !_messageQueue.isEmpty())
@@ -305,6 +327,8 @@ void AsyncEventSourceClient::_onAck(size_t len, uint32_t time)
   _runQueue();
 }
 
+/////////////////////////////////////////////////
+
 void AsyncEventSourceClient::_onPoll()
 {
   if (!_messageQueue.isEmpty())
@@ -313,11 +337,14 @@ void AsyncEventSourceClient::_onPoll()
   }
 }
 
+/////////////////////////////////////////////////
 
 void AsyncEventSourceClient::_onTimeout(uint32_t time __attribute__((unused)))
 {
   _client->close(true);
 }
+
+/////////////////////////////////////////////////
 
 void AsyncEventSourceClient::_onDisconnect()
 {
@@ -325,22 +352,30 @@ void AsyncEventSourceClient::_onDisconnect()
   _server->_handleDisconnect(this);
 }
 
+/////////////////////////////////////////////////
+
 void AsyncEventSourceClient::close()
 {
   if (_client != NULL)
     _client->close();
 }
 
+/////////////////////////////////////////////////
+
 void AsyncEventSourceClient::write(const char * message, size_t len)
 {
   _queueMessage(new AsyncEventSourceMessage(message, len));
 }
+
+/////////////////////////////////////////////////
 
 void AsyncEventSourceClient::send(const char *message, const char *event, uint32_t id, uint32_t reconnect)
 {
   String ev = generateEventMessage(message, event, id, reconnect);
   _queueMessage(new AsyncEventSourceMessage(ev.c_str(), ev.length()));
 }
+
+/////////////////////////////////////////////////
 
 void AsyncEventSourceClient::_runQueue()
 {
@@ -356,6 +391,8 @@ void AsyncEventSourceClient::_runQueue()
   }
 }
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
 
 // Handler
 
@@ -368,15 +405,21 @@ AsyncEventSource::AsyncEventSource(const String& url)
 , _connectcb(NULL)
 {}
 
+/////////////////////////////////////////////////
+
 AsyncEventSource::~AsyncEventSource()
 {
   close();
 }
 
+/////////////////////////////////////////////////
+
 void AsyncEventSource::onConnect(ArEventHandlerFunction cb) 
 {
   _connectcb = cb;
 }
+
+/////////////////////////////////////////////////
 
 void AsyncEventSource::_addClient(AsyncEventSourceClient * client) 
 {
@@ -399,10 +442,14 @@ void AsyncEventSource::_addClient(AsyncEventSourceClient * client)
     _connectcb(client);
 }
 
+/////////////////////////////////////////////////
+
 void AsyncEventSource::_handleDisconnect(AsyncEventSourceClient * client) 
 {
   _clients.remove(client);
 }
+
+/////////////////////////////////////////////////
 
 void AsyncEventSource::close() 
 {
@@ -412,6 +459,8 @@ void AsyncEventSource::close()
       c->close();
   }
 }
+
+/////////////////////////////////////////////////
 
 // pmb fix
 size_t AsyncEventSource::avgPacketsWaiting() const 
@@ -435,19 +484,22 @@ size_t AsyncEventSource::avgPacketsWaiting() const
   return ((aql) + (nConnectedClients / 2)) / (nConnectedClients); // round up
 }
 
+/////////////////////////////////////////////////
+
 void AsyncEventSource::send(const char *message, const char *event, uint32_t id, uint32_t reconnect) 
 {
-
-
   String ev = generateEventMessage(message, event, id, reconnect);
   
   for (const auto &c : _clients) 
   {
-    if (c->connected()) {
+    if (c->connected()) 
+    {
       c->write(ev.c_str(), ev.length());
     }
   }
 }
+
+/////////////////////////////////////////////////
 
 size_t AsyncEventSource::count() const 
 {
@@ -456,6 +508,8 @@ size_t AsyncEventSource::count() const
     return c->connected();
   });
 }
+
+/////////////////////////////////////////////////
 
 bool AsyncEventSource::canHandle(AsyncWebServerRequest *request) 
 {
@@ -469,6 +523,8 @@ bool AsyncEventSource::canHandle(AsyncWebServerRequest *request)
   return true;
 }
 
+/////////////////////////////////////////////////
+
 void AsyncEventSource::handleRequest(AsyncWebServerRequest *request) 
 {
   if ((_username != "" && _password != "") && !request->authenticate(_username.c_str(), _password.c_str()))
@@ -476,6 +532,9 @@ void AsyncEventSource::handleRequest(AsyncWebServerRequest *request)
     
   request->send(new AsyncEventSourceResponse(this));
 }
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
 
 // Response
 
@@ -489,12 +548,16 @@ AsyncEventSourceResponse::AsyncEventSourceResponse(AsyncEventSource *server)
   addHeader("Connection", "keep-alive");
 }
 
+/////////////////////////////////////////////////
+
 void AsyncEventSourceResponse::_respond(AsyncWebServerRequest *request) 
 {
   String out = _assembleHead(request->version());
   request->client()->write(out.c_str(), _headLength);
   _state = RESPONSE_WAIT_ACK;
 }
+
+/////////////////////////////////////////////////
 
 size_t AsyncEventSourceResponse::_ack(AsyncWebServerRequest *request, size_t len, uint32_t time __attribute__((unused))) 
 {

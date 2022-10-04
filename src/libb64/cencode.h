@@ -12,7 +12,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01
   Licensed under GPLv3 license
  
-  Version: 1.5.0
+  Version: 1.6.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -23,6 +23,7 @@
   1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
   1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
+  1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
  *****************************************************************************************************************************/
 
 #pragma once
@@ -34,9 +35,13 @@
 
 #define base64_encode_expected_len(n) ((((4 * n) / 3) + 3) & ~3)
 
+/////////////////////////////////////////////////
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/////////////////////////////////////////////////
 
 typedef enum 
 {
@@ -50,6 +55,8 @@ typedef struct
   int stepcount;
 } base64_encodestate;
 
+/////////////////////////////////////////////////
+
 void base64_init_encodestate(base64_encodestate* state_in);
 
 char base64_encode_value(char value_in);
@@ -60,8 +67,12 @@ int base64_encode_blockend(char* code_out, base64_encodestate* state_in);
 
 int base64_encode_chars(const char* plaintext_in, int length_in, char* code_out);
 
+/////////////////////////////////////////////////
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
+
+/////////////////////////////////////////////////
 
 #endif /* BASE64_CENCODE_H */

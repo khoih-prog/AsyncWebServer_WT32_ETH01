@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.5.0
+  Version: 1.6.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,6 +33,7 @@
   1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
   1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
+  1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
  *****************************************************************************************************************************/
  
 #include "WebAuthentication.h"
@@ -40,6 +41,8 @@
 
 #include "mbedtls/md5.h"
 #include "mbedtls/version.h"
+
+/////////////////////////////////////////////////
 
 // Basic Auth hash = base64("username:password")
 
@@ -66,6 +69,7 @@ bool checkBasicAuthentication(const char * hash, const char * username, const ch
   if (encoded == NULL)
   {
     delete[] toencode;
+    
     return false;
   }
 
@@ -75,6 +79,7 @@ bool checkBasicAuthentication(const char * hash, const char * username, const ch
   {
     delete[] toencode;
     delete[] encoded;
+    
     return true;
   }
 
@@ -83,6 +88,8 @@ bool checkBasicAuthentication(const char * hash, const char * username, const ch
 
   return false;
 }
+
+/////////////////////////////////////////////////
 
 static bool getMD5(uint8_t * data, uint16_t len, char * output)
 {
@@ -98,16 +105,16 @@ static bool getMD5(uint8_t * data, uint16_t len, char * output)
 
   mbedtls_md5_init(&_ctx);
   
-  #if (MBEDTLS_VERSION_NUMBER < 0x02070000)
+#if (MBEDTLS_VERSION_NUMBER < 0x02070000)
     // Superseded from v2.7.0
     mbedtls_md5_starts(&_ctx);
     mbedtls_md5_update(&_ctx, data, len);
     mbedtls_md5_finish(&_ctx, _buf);
-  #else
+#else
     mbedtls_md5_starts_ret(&_ctx);
     mbedtls_md5_update_ret(&_ctx, data, len);
     mbedtls_md5_finish_ret(&_ctx, _buf);
-  #endif
+#endif
 
   for (i = 0; i < 16; i++)
   {
@@ -118,6 +125,8 @@ static bool getMD5(uint8_t * data, uint16_t len, char * output)
 
   return true;
 }
+
+/////////////////////////////////////////////////
 
 static String genRandomMD5()
 {
@@ -133,6 +142,8 @@ static String genRandomMD5()
   return res;
 }
 
+/////////////////////////////////////////////////
+
 static String stringMD5(const String& in)
 {
   char * out = (char*)malloc(33);
@@ -145,6 +156,8 @@ static String stringMD5(const String& in)
 
   return res;
 }
+
+/////////////////////////////////////////////////
 
 String generateDigestHash(const char * username, const char * password, const char * realm)
 {
@@ -170,6 +183,8 @@ String generateDigestHash(const char * username, const char * password, const ch
   return res;
 }
 
+/////////////////////////////////////////////////
+
 String requestDigestAuthentication(const char * realm)
 {
   String header = "realm=\"";
@@ -187,6 +202,8 @@ String requestDigestAuthentication(const char * realm)
 
   return header;
 }
+
+/////////////////////////////////////////////////
 
 bool checkDigestAuthentication(const char * header, const char * method, const char * username, const char * password, const char * realm,
                                bool passwordIsHash, const char * nonce, const char * opaque, const char * uri)

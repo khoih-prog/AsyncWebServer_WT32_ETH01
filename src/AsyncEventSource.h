@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.5.0
+  Version: 1.6.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,6 +33,7 @@
   1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
   1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
+  1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
  *****************************************************************************************************************************/
  
 #ifndef ASYNCEVENTSOURCE_H_
@@ -47,13 +48,19 @@
 
 #include "AsyncWebSynchronization.h"
 
+/////////////////////////////////////////////////
+
 #define DEFAULT_MAX_SSE_CLIENTS 8
 
 class AsyncEventSource;
 class AsyncEventSourceResponse;
 class AsyncEventSourceClient;
 
+/////////////////////////////////////////////////
+
 typedef std::function<void(AsyncEventSourceClient *client)> ArEventHandlerFunction;
+
+/////////////////////////////////////////////////
 
 class AsyncEventSourceMessage 
 {
@@ -68,17 +75,23 @@ class AsyncEventSourceMessage
     ~AsyncEventSourceMessage();
     size_t ack(size_t len, uint32_t time __attribute__((unused)));
     size_t send(AsyncClient *client);
+
+    /////////////////////////////////////////////////
     
-    bool finished() 
+    inline bool finished() 
     {
       return _acked == _len;
     }
+
+    /////////////////////////////////////////////////
     
-    bool sent() 
+    inline bool sent() 
     {
       return _sent == _len;
     }
 };
+
+/////////////////////////////////////////////////
 
 class AsyncEventSourceClient 
 {
@@ -95,29 +108,41 @@ class AsyncEventSourceClient
     AsyncEventSourceClient(AsyncWebServerRequest *request, AsyncEventSource *server);
     ~AsyncEventSourceClient();
 
-    AsyncClient* client() 
+    /////////////////////////////////////////////////
+
+    inline AsyncClient* client() 
     {
       return _client;
     }
+
+    /////////////////////////////////////////////////
     
     void close();
     void write(const char * message, size_t len);
     void send(const char *message, const char *event = NULL, uint32_t id = 0, uint32_t reconnect = 0);
+
+    /////////////////////////////////////////////////
     
-    bool connected() const 
+    inline bool connected() const 
     {
       return (_client != NULL) && _client->connected();
     }
+
+    /////////////////////////////////////////////////
     
-    uint32_t lastId() const 
+    inline uint32_t lastId() const 
     {
       return _lastId;
     }
+
+    /////////////////////////////////////////////////
     
-    size_t  packetsWaiting() const 
+    inline size_t  packetsWaiting() const 
     {
       return _messageQueue.length();
     }
+
+    /////////////////////////////////////////////////
 
     //system callbacks (do not call)
     void _onAck(size_t len, uint32_t time);
@@ -125,6 +150,8 @@ class AsyncEventSourceClient
     void _onTimeout(uint32_t time);
     void _onDisconnect();
 };
+
+/////////////////////////////////////////////////
 
 class AsyncEventSource: public AsyncWebHandler 
 {
@@ -137,10 +164,14 @@ class AsyncEventSource: public AsyncWebHandler
     AsyncEventSource(const String& url);
     ~AsyncEventSource();
 
-    const char * url() const 
+    /////////////////////////////////////////////////
+
+    inline const char * url() const 
     {
       return _url.c_str();
     }
+
+    /////////////////////////////////////////////////
     
     void close();
     void onConnect(ArEventHandlerFunction cb);
@@ -155,6 +186,8 @@ class AsyncEventSource: public AsyncWebHandler
     virtual void handleRequest(AsyncWebServerRequest *request) override final;
 };
 
+/////////////////////////////////////////////////
+
 class AsyncEventSourceResponse: public AsyncWebServerResponse 
 {
   private:
@@ -165,12 +198,16 @@ class AsyncEventSourceResponse: public AsyncWebServerResponse
     AsyncEventSourceResponse(AsyncEventSource *server);
     void _respond(AsyncWebServerRequest *request);
     size_t _ack(AsyncWebServerRequest *request, size_t len, uint32_t time);
+
+    /////////////////////////////////////////////////
     
-    bool _sourceValid() const 
+    inline bool _sourceValid() const 
     {
       return true;
     }
 };
+
+/////////////////////////////////////////////////
 
 #endif /* ASYNCEVENTSOURCE_H_ */
 

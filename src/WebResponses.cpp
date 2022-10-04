@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.5.0
+  Version: 1.6.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,12 +33,15 @@
   1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
   1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
+  1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
  *****************************************************************************************************************************/
 
 #include "AsyncWebServer_WT32_ETH01.h"
 
 #include "WebResponseImpl.h"
 #include "cbuf.h"
+
+/////////////////////////////////////////////////
 
 void* memchr(void* ptr, int ch, size_t count)
 {
@@ -50,6 +53,8 @@ void* memchr(void* ptr, int ch, size_t count)
 
   return nullptr;
 }
+
+/////////////////////////////////////////////////
 
 /*
    Abstract Response
@@ -102,6 +107,8 @@ const char* AsyncWebServerResponse::_responseCodeToString(int code)
   }
 }
 
+/////////////////////////////////////////////////
+
 AsyncWebServerResponse::AsyncWebServerResponse()
   : _code(0)
   , _headers(LinkedList<AsyncWebHeader * >([](AsyncWebHeader * h)
@@ -124,10 +131,14 @@ AsyncWebServerResponse::AsyncWebServerResponse()
   }
 }
 
+/////////////////////////////////////////////////
+
 AsyncWebServerResponse::~AsyncWebServerResponse()
 {
   _headers.free();
 }
+
+/////////////////////////////////////////////////
 
 void AsyncWebServerResponse::setCode(int code)
 {
@@ -141,16 +152,22 @@ void AsyncWebServerResponse::setContentLength(size_t len)
     _contentLength = len;
 }
 
+/////////////////////////////////////////////////
+
 void AsyncWebServerResponse::setContentType(const String& type)
 {
   if (_state == RESPONSE_SETUP)
     _contentType = type;
 }
 
+/////////////////////////////////////////////////
+
 void AsyncWebServerResponse::addHeader(const String& name, const String& value)
 {
   _headers.add(new AsyncWebHeader(name, value));
 }
+
+/////////////////////////////////////////////////
 
 String AsyncWebServerResponse::_assembleHead(uint8_t version)
 {
@@ -195,25 +212,35 @@ String AsyncWebServerResponse::_assembleHead(uint8_t version)
   return out;
 }
 
+/////////////////////////////////////////////////
+
 bool AsyncWebServerResponse::_started() const
 {
   return _state > RESPONSE_SETUP;
 }
+
+/////////////////////////////////////////////////
 
 bool AsyncWebServerResponse::_finished() const
 {
   return _state > RESPONSE_WAIT_ACK;
 }
 
+/////////////////////////////////////////////////
+
 bool AsyncWebServerResponse::_failed() const
 {
   return _state == RESPONSE_FAILED;
 }
 
+/////////////////////////////////////////////////
+
 bool AsyncWebServerResponse::_sourceValid() const
 {
   return false;
 }
+
+/////////////////////////////////////////////////
 
 void AsyncWebServerResponse::_respond(AsyncWebServerRequest *request)
 {
@@ -221,14 +248,43 @@ void AsyncWebServerResponse::_respond(AsyncWebServerRequest *request)
   request->client()->close();
 }
 
+/////////////////////////////////////////////////
+
 size_t AsyncWebServerResponse::_ack(AsyncWebServerRequest *request, size_t len, uint32_t time)
 {
-  (void)request;
-  (void)len;
-  (void)time;
+  WT32_ETH01_AWS_UNUSED(request);
+  WT32_ETH01_AWS_UNUSED(len);
+  WT32_ETH01_AWS_UNUSED(time);
 
   return 0;
 }
+
+//RSMOD///////////////////////////////////////////////
+
+/*
+   String/Code Response
+ * */
+AsyncBasicResponse::AsyncBasicResponse(int code, const String& contentType, const char *content)
+{
+  _code = code;
+  _content = String("");
+  _contentCstr = (char *)content;    // RSMOD
+  _contentType = contentType;
+
+  int iLen;
+
+  if ((iLen = strlen(_contentCstr)))
+  {
+    _contentLength = iLen;
+
+    if (!_contentType.length())
+      _contentType = "text/plain";
+  }
+
+  addHeader("Connection", "close");
+}
+
+/////////////////////////////////////////////////
 
 /*
    String/Code Response
@@ -237,6 +293,9 @@ AsyncBasicResponse::AsyncBasicResponse(int code, const String& contentType, cons
 {
   _code = code;
   _content = content;
+  
+  _contentCstr = nullptr;        // RSMOD
+  
   _contentType = contentType;
 
   if (_content.length())
@@ -250,6 +309,8 @@ AsyncBasicResponse::AsyncBasicResponse(int code, const String& contentType, cons
   addHeader("Connection", "close");
 }
 
+/////////////////////////////////////////////////
+
 void AsyncBasicResponse::_respond(AsyncWebServerRequest *request)
 {
   _state = RESPONSE_HEADERS;
@@ -257,67 +318,179 @@ void AsyncBasicResponse::_respond(AsyncWebServerRequest *request)
   size_t outLen = out.length();
   size_t space = request->client()->space();
 
+  AWS_LOGDEBUG3("AsyncBasicResponse::_respond : Pre_respond, _contentLength =", _contentLength, ", out =", out );
+  AWS_LOGDEBUG3("outLen =", outLen, ", _contentCstr =", _contentCstr);
+
   if (!_contentLength && space >= outLen)
   {
+    AWS_LOGDEBUG("Step 1");
+
     _writtenLength += request->client()->write(out.c_str(), outLen);
     _state = RESPONSE_WAIT_ACK;
   }
   else if (_contentLength && space >= outLen + _contentLength)
   {
-    out += _content;
-    outLen += _contentLength;
-    _writtenLength += request->client()->write(out.c_str(), outLen);
+    AWS_LOGDEBUG("Step 2");
+
+    if (_contentCstr)
+    {
+      memmove(&_contentCstr[outLen], _contentCstr, _contentLength);
+      memcpy(_contentCstr, out.c_str(), outLen);
+      outLen += _contentLength;
+
+      AWS_LOGDEBUG1("_contentCstr =", _contentCstr);
+
+      _writtenLength += request->client()->write(_contentCstr, outLen);
+    }
+    else
+    {
+      out += _content;
+      outLen += _contentLength;
+      _writtenLength += request->client()->write(out.c_str(), outLen);
+    }
+
     _state = RESPONSE_WAIT_ACK;
   }
   else if (space && space < outLen)
   {
     String partial = out.substring(0, space);
-    _content = out.substring(space) + _content;
+
+    AWS_LOGDEBUG("Step 3");
+
+    if (_contentCstr)
+    {
+      int deltaLen = out.length() - partial.length();
+
+      memmove(&_contentCstr[deltaLen], _contentCstr,  deltaLen);
+      memcpy(_contentCstr, out.substring(space).c_str(), deltaLen);
+    }
+    else
+    {
+      _content = out.substring(space) + _content;
+    }
+
     _contentLength += outLen - space;
+
+    AWS_LOGDEBUG1("partial =", partial);
+
     _writtenLength += request->client()->write(partial.c_str(), partial.length());
     _state = RESPONSE_CONTENT;
   }
   else if (space > outLen && space < (outLen + _contentLength))
   {
     size_t shift = space - outLen;
+
+    AWS_LOGDEBUG("Step 4");
+
     outLen += shift;
     _sentLength += shift;
-    out += _content.substring(0, shift);
-    _content = _content.substring(shift);
+
+    if (_contentCstr)
+    {
+      char *s = (char *)malloc(shift + 1);
+
+      strncpy(s, _contentCstr, shift);
+      s[shift] = '\0';
+      out += String(s);
+      _contentCstr += shift;
+
+      free(s);
+    }
+    else
+    {
+      out += _content.substring(0, shift);
+      _content = _content.substring(shift);
+    }
+
+    AWS_LOGDEBUG1("out =", out);
+
     _writtenLength += request->client()->write(out.c_str(), outLen);
     _state = RESPONSE_CONTENT;
   }
   else
   {
-    _content = out + _content;
+    AWS_LOGDEBUG("Step 5");
+
+    if (_contentCstr)
+    {
+      memmove(&_contentCstr[outLen], _contentCstr, _contentLength);
+      memcpy(_contentCstr, out.c_str(), outLen);
+    }
+    else
+    {
+      _content = out + _content;
+    }
+
     _contentLength += outLen;
     _state = RESPONSE_CONTENT;
   }
+
+  AWS_LOGDEBUG3("AsyncBasicResponse::_respond : Post_respond, _contentLength =", _contentLength, ", out =", out );
+  AWS_LOGDEBUG3("outLen =", outLen, ", _contentCstr =", _contentCstr);
 }
+
+/////////////////////////////////////////////////
 
 size_t AsyncBasicResponse::_ack(AsyncWebServerRequest *request, size_t len, uint32_t time)
 {
-  (void)time;
+  WT32_ETH01_AWS_UNUSED(time);
+
+  AWS_LOGDEBUG1("AsyncBasicResponse::_ack : Pre_ack, _contentLength =", _contentLength);
+
   _ackedLength += len;
 
   if (_state == RESPONSE_CONTENT)
   {
+    String out;
     size_t available = _contentLength - _sentLength;
     size_t space = request->client()->space();
+
+    AWS_LOGDEBUG3("AsyncBasicResponse::_ack : available =", available, ", space =", space );
 
     //we can fit in this packet
     if (space > available)
     {
-      _writtenLength += request->client()->write(_content.c_str(), available);
-      _content = String();
+      // Serial.println("In space>available");
+      AWS_LOGDEBUG1("AsyncBasicResponse::_ack : Pre_ack, _contentLength =", _contentLength);
+
+      if (_contentCstr)
+      {
+        AWS_LOGDEBUG1("In space>available : output =", _contentCstr);
+
+        _writtenLength += request->client()->write(_contentCstr, available);
+        //_contentCstr[0] = '\0';
+      }
+      else
+      {
+        _writtenLength += request->client()->write(_content.c_str(), available);
+        _content = String();
+      }
+      
       _state = RESPONSE_WAIT_ACK;
+
       return available;
     }
 
     //send some data, the rest on ack
-    String out = _content.substring(0, space);
-    _content = _content.substring(space);
+    if (_contentCstr)
+    {
+      char *s = (char *)malloc(space + 1);
+      strncpy(s, _contentCstr, space);
+      s[space] = '\0';
+      out = String(s);
+      _contentCstr += space;
+      free(s);
+    }
+    else
+    {
+      out = _content.substring(0, space);
+      _content = _content.substring(space);
+    }
+
     _sentLength += space;
+
+    AWS_LOGDEBUG1("In space>available : output =", out);
+
     _writtenLength += request->client()->write(out.c_str(), space);
 
     return space;
@@ -330,9 +503,13 @@ size_t AsyncBasicResponse::_ack(AsyncWebServerRequest *request, size_t len, uint
     }
   }
 
+  AWS_LOGDEBUG3("AsyncBasicResponse::_ack : Post_ack, _contentLength =", _contentLength, ", _contentCstr =", _contentCstr);
+
   return 0;
 }
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
 
 /*
    Abstract Response
@@ -349,6 +526,8 @@ AsyncAbstractResponse::AsyncAbstractResponse(AwsTemplateProcessor callback): _ca
   }
 }
 
+/////////////////////////////////////////////////
+
 void AsyncAbstractResponse::_respond(AsyncWebServerRequest *request)
 {
   addHeader("Connection", "close");
@@ -357,9 +536,11 @@ void AsyncAbstractResponse::_respond(AsyncWebServerRequest *request)
   _ack(request, 0, 0);
 }
 
+/////////////////////////////////////////////////
+
 size_t AsyncAbstractResponse::_ack(AsyncWebServerRequest *request, size_t len, uint32_t time)
 {
-  (void)time;
+  WT32_ETH01_AWS_UNUSED(time);
 
   if (!_sourceValid())
   {
@@ -507,6 +688,8 @@ size_t AsyncAbstractResponse::_ack(AsyncWebServerRequest *request, size_t len, u
   return 0;
 }
 
+/////////////////////////////////////////////////
+
 size_t AsyncAbstractResponse::_readDataFromCacheOrContent(uint8_t* data, const size_t len)
 {
   // If we have something in cache, copy it to buffer
@@ -524,6 +707,8 @@ size_t AsyncAbstractResponse::_readDataFromCacheOrContent(uint8_t* data, const s
 
   return readFromCache + readFromContent;
 }
+
+/////////////////////////////////////////////////
 
 size_t AsyncAbstractResponse::_fillBufferAndProcessTemplates(uint8_t* data, size_t len)
 {
@@ -652,6 +837,9 @@ size_t AsyncAbstractResponse::_fillBufferAndProcessTemplates(uint8_t* data, size
   return len;
 }
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
 /*
    File Response
  * */
@@ -661,6 +849,8 @@ AsyncFileResponse::~AsyncFileResponse()
   if (_content)
     _content.close();
 }
+
+/////////////////////////////////////////////////
 
 void AsyncFileResponse::_setContentType(const String& path)
 {
@@ -703,7 +893,10 @@ void AsyncFileResponse::_setContentType(const String& path)
     _contentType = "text/plain";
 }
 
-AsyncFileResponse::AsyncFileResponse(FS &fs, const String& path, const String& contentType, bool download, AwsTemplateProcessor callback): AsyncAbstractResponse(callback) 
+/////////////////////////////////////////////////
+
+AsyncFileResponse::AsyncFileResponse(FS &fs, const String& path, const String& contentType, bool download, 
+                                     AwsTemplateProcessor callback): AsyncAbstractResponse(callback) 
 {
   _code = 200;
   _path = path;
@@ -743,7 +936,10 @@ AsyncFileResponse::AsyncFileResponse(FS &fs, const String& path, const String& c
   addHeader("Content-Disposition", buf);
 }
 
-AsyncFileResponse::AsyncFileResponse(File content, const String& path, const String& contentType, bool download, AwsTemplateProcessor callback): AsyncAbstractResponse(callback) 
+/////////////////////////////////////////////////
+
+AsyncFileResponse::AsyncFileResponse(File content, const String& path, const String& contentType, bool download, 
+                                     AwsTemplateProcessor callback): AsyncAbstractResponse(callback) 
 {
   _code = 200;
   _path = path;
@@ -780,22 +976,30 @@ AsyncFileResponse::AsyncFileResponse(File content, const String& path, const Str
   addHeader("Content-Disposition", buf);
 }
 
+/////////////////////////////////////////////////
+
 size_t AsyncFileResponse::_fillBuffer(uint8_t *data, size_t len) 
 {
   return _content.read(data, len);
 }
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
 /*
    Stream Response
  * */
 
-AsyncStreamResponse::AsyncStreamResponse(Stream &stream, const String& contentType, size_t len, AwsTemplateProcessor callback): AsyncAbstractResponse(callback) 
+AsyncStreamResponse::AsyncStreamResponse(Stream &stream, const String& contentType, size_t len, 
+                                         AwsTemplateProcessor callback): AsyncAbstractResponse(callback) 
 {
   _code = 200;
   _content = &stream;
   _contentLength = len;
   _contentType = contentType;
 }
+
+/////////////////////////////////////////////////
 
 size_t AsyncStreamResponse::_fillBuffer(uint8_t *data, size_t len) 
 {
@@ -809,11 +1013,15 @@ size_t AsyncStreamResponse::_fillBuffer(uint8_t *data, size_t len)
   return outLen;
 }
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
 /*
    Callback Response
  * */
 
-AsyncCallbackResponse::AsyncCallbackResponse(const String& contentType, size_t len, AwsResponseFiller callback, AwsTemplateProcessor templateCallback): AsyncAbstractResponse(templateCallback) 
+AsyncCallbackResponse::AsyncCallbackResponse(const String& contentType, size_t len, AwsResponseFiller callback, 
+                                             AwsTemplateProcessor templateCallback): AsyncAbstractResponse(templateCallback) 
 {
   _code = 200;
   _content = callback;
@@ -826,22 +1034,29 @@ AsyncCallbackResponse::AsyncCallbackResponse(const String& contentType, size_t l
   _filledLength = 0;
 }
 
+/////////////////////////////////////////////////
+
 size_t AsyncCallbackResponse::_fillBuffer(uint8_t *data, size_t len) 
 {
   size_t ret = _content(data, len, _filledLength);
   
-  if (ret != RESPONSE_TRY_AGAIN) {
+  if (ret != RESPONSE_TRY_AGAIN) 
+  {
     _filledLength += ret;
   }
   
   return ret;
 }
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
 /*
    Chunked Response
  * */
 
-AsyncChunkedResponse::AsyncChunkedResponse(const String& contentType, AwsResponseFiller callback, AwsTemplateProcessor processorCallback): AsyncAbstractResponse(processorCallback) 
+AsyncChunkedResponse::AsyncChunkedResponse(const String& contentType, AwsResponseFiller callback, 
+                                           AwsTemplateProcessor processorCallback): AsyncAbstractResponse(processorCallback) 
 {
   _code = 200;
   _content = callback;
@@ -851,6 +1066,8 @@ AsyncChunkedResponse::AsyncChunkedResponse(const String& contentType, AwsRespons
   _chunked = true;
   _filledLength = 0;
 }
+
+/////////////////////////////////////////////////
 
 size_t AsyncChunkedResponse::_fillBuffer(uint8_t *data, size_t len) 
 {
@@ -864,11 +1081,15 @@ size_t AsyncChunkedResponse::_fillBuffer(uint8_t *data, size_t len)
   return ret;
 }
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
 /*
    Progmem Response
  * */
 
-AsyncProgmemResponse::AsyncProgmemResponse(int code, const String& contentType, const uint8_t * content, size_t len, AwsTemplateProcessor callback): AsyncAbstractResponse(callback) 
+AsyncProgmemResponse::AsyncProgmemResponse(int code, const String& contentType, const uint8_t * content, size_t len, 
+                                           AwsTemplateProcessor callback): AsyncAbstractResponse(callback) 
 {
   _code = code;
   _content = content;
@@ -876,6 +1097,8 @@ AsyncProgmemResponse::AsyncProgmemResponse(int code, const String& contentType, 
   _contentLength = len;
   _readLength = 0;
 }
+
+/////////////////////////////////////////////////
 
 size_t AsyncProgmemResponse::_fillBuffer(uint8_t *data, size_t len) 
 {
@@ -894,6 +1117,8 @@ size_t AsyncProgmemResponse::_fillBuffer(uint8_t *data, size_t len)
   return left;
 }
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
 
 /*
    Response Stream (You can print/write/printf to it, up to the contentLen bytes)
@@ -907,15 +1132,21 @@ AsyncResponseStream::AsyncResponseStream(const String& contentType, size_t buffe
   _content = new cbuf(bufferSize);
 }
 
+/////////////////////////////////////////////////
+
 AsyncResponseStream::~AsyncResponseStream() 
 {
   delete _content;
 }
 
+/////////////////////////////////////////////////
+
 size_t AsyncResponseStream::_fillBuffer(uint8_t *buf, size_t maxLen) 
 {
   return _content->read((char*)buf, maxLen);
 }
+
+/////////////////////////////////////////////////
 
 size_t AsyncResponseStream::write(const uint8_t *data, size_t len) 
 {
@@ -934,7 +1165,12 @@ size_t AsyncResponseStream::write(const uint8_t *data, size_t len)
   return written;
 }
 
+/////////////////////////////////////////////////
+
 size_t AsyncResponseStream::write(uint8_t data) 
 {
   return write(&data, 1);
 }
+
+/////////////////////////////////////////////////
+

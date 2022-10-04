@@ -39,6 +39,8 @@
 
 #include "WebHandlerImpl.h"
 
+/////////////////////////////////////////////////
+
 AsyncStaticWebHandler::AsyncStaticWebHandler(const char* uri, FS& fs, const char* path, const char* cache_control)
   : _fs(fs), _uri(uri), _path(path), _default_file("index.htm"), _cache_control(cache_control), _last_modified(""), _callback(nullptr)
 {
@@ -66,12 +68,16 @@ AsyncStaticWebHandler::AsyncStaticWebHandler(const char* uri, FS& fs, const char
   _gzipStats = 0xF8;
 }
 
+/////////////////////////////////////////////////
+
 AsyncStaticWebHandler& AsyncStaticWebHandler::setIsDir(bool isDir)
 {
   _isDir = isDir;
 
   return *this;
 }
+
+/////////////////////////////////////////////////
 
 AsyncStaticWebHandler& AsyncStaticWebHandler::setDefaultFile(const char* filename)
 {
@@ -80,12 +86,16 @@ AsyncStaticWebHandler& AsyncStaticWebHandler::setDefaultFile(const char* filenam
   return *this;
 }
 
+/////////////////////////////////////////////////
+
 AsyncStaticWebHandler& AsyncStaticWebHandler::setCacheControl(const char* cache_control)
 {
   _cache_control = String(cache_control);
 
   return *this;
 }
+
+/////////////////////////////////////////////////
 
 AsyncStaticWebHandler& AsyncStaticWebHandler::setLastModified(const char* last_modified)
 {
@@ -94,6 +104,8 @@ AsyncStaticWebHandler& AsyncStaticWebHandler::setLastModified(const char* last_m
   return *this;
 }
 
+/////////////////////////////////////////////////
+
 AsyncStaticWebHandler& AsyncStaticWebHandler::setLastModified(struct tm* last_modified)
 {
   char result[30];
@@ -101,6 +113,8 @@ AsyncStaticWebHandler& AsyncStaticWebHandler::setLastModified(struct tm* last_mo
 
   return setLastModified((const char *)result);
 }
+
+/////////////////////////////////////////////////
 
 bool AsyncStaticWebHandler::canHandle(AsyncWebServerRequest *request)
 {
@@ -125,6 +139,8 @@ bool AsyncStaticWebHandler::canHandle(AsyncWebServerRequest *request)
 
   return false;
 }
+
+/////////////////////////////////////////////////
 
 bool AsyncStaticWebHandler::_getFile(AsyncWebServerRequest *request)
 {
@@ -153,7 +169,11 @@ bool AsyncStaticWebHandler::_getFile(AsyncWebServerRequest *request)
   return _fileExists(request, path);
 }
 
+/////////////////////////////////////////////////
+
 #define FILE_IS_REAL(f) (f == true && !f.isDirectory())
+
+/////////////////////////////////////////////////
 
 bool AsyncStaticWebHandler::_fileExists(AsyncWebServerRequest *request, const String& path)
 {
@@ -209,6 +229,8 @@ bool AsyncStaticWebHandler::_fileExists(AsyncWebServerRequest *request, const St
   return found;
 }
 
+/////////////////////////////////////////////////
+
 uint8_t AsyncStaticWebHandler::_countBits(const uint8_t value) const
 {
   uint8_t w = value;
@@ -219,6 +241,8 @@ uint8_t AsyncStaticWebHandler::_countBits(const uint8_t value) const
 
   return n;
 }
+
+/////////////////////////////////////////////////
 
 void AsyncStaticWebHandler::handleRequest(AsyncWebServerRequest *request)
 {

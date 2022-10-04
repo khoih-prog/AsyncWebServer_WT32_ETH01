@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.5.0
+  Version: 1.6.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,20 +33,27 @@
   1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
   1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
+  1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
  *****************************************************************************************************************************/
 
 #include "AsyncWebServer_WT32_ETH01.h"
 #include "WebHandlerImpl.h"
+
+/////////////////////////////////////////////////
 
 bool ON_STA_FILTER(AsyncWebServerRequest *request)
 {
   return ETH.localIP() == request->client()->localIP();
 }
 
+/////////////////////////////////////////////////
+
 bool ON_AP_FILTER(AsyncWebServerRequest *request)
 {
   return ETH.localIP() != request->client()->localIP();
 }
+
+/////////////////////////////////////////////////
 
 AsyncWebServer::AsyncWebServer(uint16_t port)
   : _server(port),
@@ -81,6 +88,8 @@ _handlers(LinkedList<AsyncWebHandler*>([](AsyncWebHandler* h)
   }, this);
 }
 
+/////////////////////////////////////////////////
+
 AsyncWebServer::~AsyncWebServer()
 {
   reset();
@@ -90,6 +99,8 @@ AsyncWebServer::~AsyncWebServer()
     delete _catchAllHandler;
 }
 
+/////////////////////////////////////////////////
+
 AsyncWebRewrite& AsyncWebServer::addRewrite(AsyncWebRewrite* rewrite)
 {
   _rewrites.add(rewrite);
@@ -97,15 +108,21 @@ AsyncWebRewrite& AsyncWebServer::addRewrite(AsyncWebRewrite* rewrite)
   return *rewrite;
 }
 
+/////////////////////////////////////////////////
+
 bool AsyncWebServer::removeRewrite(AsyncWebRewrite *rewrite)
 {
   return _rewrites.remove(rewrite);
 }
 
+/////////////////////////////////////////////////
+
 AsyncWebRewrite& AsyncWebServer::rewrite(const char* from, const char* to)
 {
   return addRewrite(new AsyncWebRewrite(from, to));
 }
+
+/////////////////////////////////////////////////
 
 AsyncWebHandler& AsyncWebServer::addHandler(AsyncWebHandler* handler)
 {
@@ -114,10 +131,14 @@ AsyncWebHandler& AsyncWebServer::addHandler(AsyncWebHandler* handler)
   return *handler;
 }
 
+/////////////////////////////////////////////////
+
 bool AsyncWebServer::removeHandler(AsyncWebHandler *handler)
 {
   return _handlers.remove(handler);
 }
+
+/////////////////////////////////////////////////
 
 void AsyncWebServer::begin()
 {
@@ -125,10 +146,14 @@ void AsyncWebServer::begin()
   _server.begin();
 }
 
+/////////////////////////////////////////////////
+
 void AsyncWebServer::end()
 {
   _server.end();
 }
+
+/////////////////////////////////////////////////
 
 #if ASYNC_TCP_SSL_ENABLED
 
@@ -137,6 +162,8 @@ void AsyncWebServer::onSslFileRequest(AcSSlFileHandler cb, void* arg)
   _server.onSslFileRequest(cb, arg);
 }
 
+/////////////////////////////////////////////////
+
 void AsyncWebServer::beginSecure(const char *cert, const char *key, const char *password)
 {
   _server.beginSecure(cert, key, password);
@@ -144,10 +171,14 @@ void AsyncWebServer::beginSecure(const char *cert, const char *key, const char *
 
 #endif
 
+/////////////////////////////////////////////////
+
 void AsyncWebServer::_handleDisconnect(AsyncWebServerRequest *request)
 {
   delete request;
 }
+
+/////////////////////////////////////////////////
 
 void AsyncWebServer::_rewriteRequest(AsyncWebServerRequest *request)
 {
@@ -160,6 +191,8 @@ void AsyncWebServer::_rewriteRequest(AsyncWebServerRequest *request)
     }
   }
 }
+
+/////////////////////////////////////////////////
 
 void AsyncWebServer::_attachHandler(AsyncWebServerRequest *request)
 {
@@ -176,8 +209,10 @@ void AsyncWebServer::_attachHandler(AsyncWebServerRequest *request)
   request->setHandler(_catchAllHandler);
 }
 
+/////////////////////////////////////////////////
 
-AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest, ArUploadHandlerFunction onUpload, ArBodyHandlerFunction onBody)
+AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest, 
+                                            ArUploadHandlerFunction onUpload, ArBodyHandlerFunction onBody)
 {
   AsyncCallbackWebHandler* handler = new AsyncCallbackWebHandler();
   handler->setUri(uri);
@@ -190,7 +225,10 @@ AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodCom
   return *handler;
 }
 
-AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest, ArUploadHandlerFunction onUpload)
+/////////////////////////////////////////////////
+
+AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest, 
+                                            ArUploadHandlerFunction onUpload)
 {
   AsyncCallbackWebHandler* handler = new AsyncCallbackWebHandler();
   handler->setUri(uri);
@@ -201,6 +239,8 @@ AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodCom
 
   return *handler;
 }
+
+/////////////////////////////////////////////////
 
 AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest)
 {
@@ -213,6 +253,8 @@ AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodCom
   return *handler;
 }
 
+/////////////////////////////////////////////////
+
 AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, ArRequestHandlerFunction onRequest)
 {
   AsyncCallbackWebHandler* handler = new AsyncCallbackWebHandler();
@@ -223,6 +265,8 @@ AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, ArRequestHandlerFun
   return *handler;
 }
 
+/////////////////////////////////////////////////
+
 AsyncStaticWebHandler& AsyncWebServer::serveStatic(const char* uri, fs::FS& fs, const char* path, const char* cache_control)
 {
   AsyncStaticWebHandler* handler = new AsyncStaticWebHandler(uri, fs, path, cache_control);
@@ -231,20 +275,28 @@ AsyncStaticWebHandler& AsyncWebServer::serveStatic(const char* uri, fs::FS& fs, 
   return *handler;
 }
 
+/////////////////////////////////////////////////
+
 void AsyncWebServer::onNotFound(ArRequestHandlerFunction fn)
 {
   _catchAllHandler->onRequest(fn);
 }
+
+/////////////////////////////////////////////////
 
 void AsyncWebServer::onFileUpload(ArUploadHandlerFunction fn)
 {
   _catchAllHandler->onUpload(fn);
 }
 
+/////////////////////////////////////////////////
+
 void AsyncWebServer::onRequestBody(ArBodyHandlerFunction fn)
 {
   _catchAllHandler->onBody(fn);
 }
+
+/////////////////////////////////////////////////
 
 void AsyncWebServer::reset()
 {
@@ -258,5 +310,7 @@ void AsyncWebServer::reset()
     _catchAllHandler->onBody(NULL);
   }
 }
+
+/////////////////////////////////////////////////
 
 

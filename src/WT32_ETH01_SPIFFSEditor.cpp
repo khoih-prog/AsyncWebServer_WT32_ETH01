@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.5.0
+  Version: 1.6.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,10 +33,13 @@
   1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
   1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
+  1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
  *****************************************************************************************************************************/
  
 #include "WT32_ETH01_SPIFFSEditor.h"
 #include <FS.h>
+
+/////////////////////////////////////////////////
 
 //File: edit.htm.gz, Size: 4151
 #define edit_htm_gz_len 4151
@@ -305,6 +308,8 @@ const uint8_t edit_htm_gz[] PROGMEM =
   0xE8, 0x9D, 0x36, 0x92, 0x29, 0x00, 0x00
 };
 
+/////////////////////////////////////////////////
+
 #define SPIFFS_MAXLENGTH_FILEPATH 32
 
 const char *excludeListFile = "/.exclude.files";
@@ -316,6 +321,8 @@ typedef struct ExcludeListS
 } ExcludeList;
 
 static ExcludeList *excludes = NULL;
+
+/////////////////////////////////////////////////
 
 static bool matchWild(const char *pattern, const char *testee)
 {
@@ -352,6 +359,8 @@ static bool matchWild(const char *pattern, const char *testee)
   return (*pattern == 0);
 }
 
+/////////////////////////////////////////////////
+
 static bool addExclude(const char *item)
 {
   size_t len = strlen(item);
@@ -382,6 +391,8 @@ static bool addExclude(const char *item)
 
   return true;
 }
+
+/////////////////////////////////////////////////
 
 static void loadExcludeList(fs::FS &_fs, const char *filename)
 {
@@ -441,6 +452,8 @@ static void loadExcludeList(fs::FS &_fs, const char *filename)
   excludeFile.close();
 }
 
+/////////////////////////////////////////////////
+
 static bool isExcluded(fs::FS &_fs, const char *filename)
 {
   if (excludes == NULL)
@@ -463,6 +476,9 @@ static bool isExcluded(fs::FS &_fs, const char *filename)
   return false;
 }
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
 // WEB HANDLER IMPLEMENTATION
 
 SPIFFSEditor::SPIFFSEditor(const fs::FS& fs, const String& username, const String& password)
@@ -472,6 +488,8 @@ SPIFFSEditor::SPIFFSEditor(const fs::FS& fs, const String& username, const Strin
   , _authenticated(false)
   , _startTime(0)
 {}
+
+/////////////////////////////////////////////////
 
 bool SPIFFSEditor::canHandle(AsyncWebServerRequest *request)
 {
@@ -529,6 +547,7 @@ bool SPIFFSEditor::canHandle(AsyncWebServerRequest *request)
   return false;
 }
 
+/////////////////////////////////////////////////
 
 void SPIFFSEditor::handleRequest(AsyncWebServerRequest *request)
 {
@@ -641,6 +660,8 @@ void SPIFFSEditor::handleRequest(AsyncWebServerRequest *request)
       request->send(400);
   }
 }
+
+/////////////////////////////////////////////////
 
 void SPIFFSEditor::handleUpload(AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final)
 {

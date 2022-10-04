@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.5.0
+  Version: 1.6.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,6 +33,7 @@
   1.4.0   K Hoang      27/11/2021 Auto detect ESP32 core version
   1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
+  1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
  *****************************************************************************************************************************/
 
 #ifndef WEB_AUTHENTICATION_H_
@@ -42,6 +43,8 @@
 
 #include "AsyncWebServer_WT32_ETH01_Debug.h"
 
+/////////////////////////////////////////////////
+
 bool checkBasicAuthentication(const char * header, const char * username, const char * password);
 String requestDigestAuthentication(const char * realm);
 
@@ -50,5 +53,7 @@ bool checkDigestAuthentication(const char * header, const char * method, const c
 
 //for storing hashed versions on the device that can be authenticated against
 String generateDigestHash(const char * username, const char * password, const char * realm);
+
+/////////////////////////////////////////////////
 
 #endif    // WEB_AUTHENTICATION_H_
