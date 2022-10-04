@@ -1470,9 +1470,9 @@ You can access the Async Advanced WebServers @ the server IP and corresponding p
 
 ---
 
-#### 8. Async_AdvancedWebServer_MemoryIssues_Send_CString on RASPBERRY_PI_PICO_W
+#### 2. Async_AdvancedWebServer_MemoryIssues_Send_CString on WT32-ETH01 with ETH_PHY_LAN8720
 
-Following is the debug terminal and screen shot when running example [Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) on RASPBERRY_PI_PICO_W to demonstrate the new and powerful `HEAP-saving` feature
+Following is the debug terminal and screen shot when running example [Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString), on WT32-ETH01 with ETH_PHY_LAN8720, to demonstrate the new and powerful `HEAP-saving` feature
 
 
 ##### Using CString  ===> smaller heap (120,876 bytes)
@@ -1530,7 +1530,7 @@ Out String Length=31247
 ```
 
 
-You can access the Async Advanced WebServers at the displayed server IP, e.g. `192.168.2.74`
+You can access the Async Advanced WebServers at the displayed server IP, e.g. `192.168.2.232`
 
 <p align="center">
     <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/pics/Async_AdvancedWebServer_MemoryIssues_Send_CString.png">
