@@ -107,34 +107,47 @@
 
 ### Important Note from v1.6.0
 
-The new `v1.6.0` has added a new and powerful feature to permit using `CString` to save heap to send `very large data`.
+The new `v1.6.0+` has added a new and powerful feature to permit using `CString` in optional `SDRAM` to save heap to send `very large data`.
 
-Check the `marvelleous` PR of **@salasidis** [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8) and these new examples
+Check the `marvelleous` PRs of **@salasidis** in [Portenta_H7_AsyncWebServer library](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer)
+- [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8)
+- [All memmove() removed - string no longer destroyed #11](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/11)
+
+and these new examples
 
 1. [Async_AdvancedWebServer_MemoryIssues_Send_CString](https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/tree/main/examples/Async_AdvancedWebServer_MemoryIssues_Send_CString)
 2. [Async_AdvancedWebServer_MemoryIssues_SendArduinoString](https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/tree/main/examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString)
 
-If using Arduino `String`, to send a buffer around 30 KBytes, the used `Max Heap` is around **152,088 bytes**
+If using Arduino String, to send a buffer around 30 KBytes, the used `Max Heap` is around **152,136 bytes**
 
-If using `CString`, with the same 30 KBytes, the used `Max Heap` is around **120,876 bytes, saving around 30 KBytes**
+If using CString in regular memory, with the same 30 KBytes, the used `Max Heap` is around **120,880 bytes), saving around a buffer size (30 KBytes)**
 
 This is very critical in use-cases where sending `very large data` is necessary, without `heap-allocation-error`.
 
+
 1. The traditional function used to send `Arduino String` is
 
-https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/9087dbc7adf03139f5967b784a9f0c7a0c358339/src/AsyncWebServer_WT32_ETH01.h#L511
+https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/6c499f1d3e91b1e33f86f3d9c6a36fa60470a38f/src/AsyncWebServer_WT32_ETH01.h#L518
+
+```cpp
+void send(int code, const String& contentType = String(), const String& content = String());
+```
 
 such as
 
 ```cpp
 request->send(200, textPlainStr, ArduinoStr);
 ```
+The required additional HEAP is about **3 times of the String size**
 
-The required HEAP is around **2 times of the String size**
 
-2. To use `CString` but don't destroy it after sending. Use function
+2. To use `CString` with copying while sending. Use function
 
-https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/9087dbc7adf03139f5967b784a9f0c7a0c358339/src/AsyncWebServer_WT32_ETH01.h#L513
+https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/6c499f1d3e91b1e33f86f3d9c6a36fa60470a38f/src/AsyncWebServer_WT32_ETH01.h#L520
+
+```cpp
+void send(int code, const String& contentType, const char *content, bool nonDetructiveSend = true);    // RSMOD
+```
 
 such as 
 
@@ -142,12 +155,16 @@ such as
 request->send(200, textPlainStr, cStr);
 ```
 
-The required HEAP is also around **2 times of the CString size**
+The required additional HEAP is also about **2 times of the CString size** because of `unnecessary copies` of the CString in HEAP.  Avoid this `unefficient` way.
 
 
-3. To use `CString` but destroy it after sending. Use function
+3. To use `CString` without copying while sending. Use function
 
-https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/9087dbc7adf03139f5967b784a9f0c7a0c358339/src/AsyncWebServer_WT32_ETH01.h#L513
+https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/6c499f1d3e91b1e33f86f3d9c6a36fa60470a38f/src/AsyncWebServer_WT32_ETH01.h#L520
+
+```cpp
+void send(int code, const String& contentType, const char *content, bool nonDetructiveSend = true);    // RSMOD
+```
 
 such as 
 
@@ -155,7 +172,8 @@ such as
 request->send(200, textPlainStr, cStr, false);
 ```
 
-The required HEAP is also about **1 times of the CString size**.
+The required additional HEAP is about **1 times of the CString size**. This way is the best and most efficient way to use by avoiding of `unnecessary copies` of the CString in HEAP
+
 
 
 ---
@@ -256,7 +274,7 @@ The best and easiest way is to use `Arduino Library Manager`. Search for `AsyncW
 ## Important things to remember
 
 - This is fully asynchronous server and as such does not run on the loop thread.
-- You can not use yield() or delay() or any function that uses them inside the callbacks
+- You can not use `yield()` or `delay()` or any function that uses them inside the callbacks
 - The server is smart enough to know when to close the connection and free resources
 - You can not send more than one response to a single request
 
@@ -1057,7 +1075,7 @@ void sendDataWs(AsyncWebSocketClient * client)
 
 ### Limiting the number of web socket clients
 
-Browsers sometimes do not correctly close the websocket connection, even when the close() function is called in javascript.  This will eventually exhaust the web server's resources and will cause the server to crash.  Periodically calling the cleanClients() function from the main loop() function limits the number of clients by closing the oldest client when the maximum number of clients has been exceeded.  This can called be every cycle, however, if you wish to use less power, then calling as infrequently as once per second is sufficient.
+Browsers sometimes do not correctly close the websocket connection, even when the `close()` function is called in javascript.  This will eventually exhaust the web server's resources and will cause the server to crash.  Periodically calling the `cleanClients()` function from the main `loop()` function limits the number of clients by closing the oldest client when the maximum number of clients has been exceeded.  This can called be every cycle, however, if you wish to use less power, then calling as infrequently as once per second is sufficient.
 
 ```cpp
 void loop(){
@@ -1069,8 +1087,8 @@ void loop(){
 
 ## Async Event Source Plugin
 
-The server includes EventSource (Server-Sent Events) plugin which can be used to send short text events to the browser.
-Difference between EventSource and WebSockets is that EventSource is single direction, text-only protocol.
+The server includes `EventSource` (Server-Sent Events) plugin which can be used to send short text events to the browser.
+Difference between `EventSource` and `WebSockets` is that `EventSource` is single direction, text-only protocol.
 
 ### Setup Event Source on the server
 
@@ -1436,12 +1454,12 @@ You can access the Async Advanced WebServer @ the server IP
 
 #### 1. AsyncMultiWebServer_WT32_ETH01 on WT32-ETH01 with ETH_PHY_LAN8720
 
-Following are debug terminal output and screen shots when running example [AsyncMultiWebServer_WT32_ETH01](examples/AsyncMultiWebServer_WT32_ETH01) on WT32-ETH01 with ETH_PHY_LAN8720, using EP32 core v2.0.0, to demonstrate the operation of 3 independent AsyncWebServers on 3 different ports and how to handle the complicated AsyncMultiWebServers.
+Following are debug terminal output and screen shots when running example [AsyncMultiWebServer_WT32_ETH01](examples/AsyncMultiWebServer_WT32_ETH01) on `WT32-ETH01 with ETH_PHY_LAN8720`, using ESP32 core `v2.0.0+`, to demonstrate the operation of 3 independent AsyncWebServers on 3 different ports and how to handle the complicated AsyncMultiWebServers.
 
 
 ```
 Starting AsyncMultiWebServer_WT32_ETH01 on WT32-ETH01 with ETH_PHY_LAN8720
-AsyncWebServer_WT32_ETH01 v1.6.0 for core v2.0.0+
+AsyncWebServer_WT32_ETH01 v1.6.1 for core v2.0.0+
 ETH MAC: A8:03:2A:A1:61:73, IPv4: 192.168.2.232
 FULL_DUPLEX, 100Mbps
 
@@ -1472,14 +1490,14 @@ You can access the Async Advanced WebServers @ the server IP and corresponding p
 
 #### 2. Async_AdvancedWebServer_MemoryIssues_Send_CString on WT32-ETH01 with ETH_PHY_LAN8720
 
-Following is the debug terminal and screen shot when running example [Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString), on WT32-ETH01 with ETH_PHY_LAN8720, to demonstrate the new and powerful `HEAP-saving` feature
+Following is the debug terminal and screen shot when running example [Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString), on `WT32-ETH01 with ETH_PHY_LAN8720`, to demonstrate the new and powerful `HEAP-saving` feature
 
 
-##### Using CString  ===> smaller heap (120,876 bytes)
+##### Using CString  ===> smaller heap (120,880 bytes)
 
 ```
 Start Async_AdvancedWebServer_MemoryIssues_Send_CString on WT32-ETH01 with ETH_PHY_LAN8720
-AsyncWebServer_WT32_ETH01 v1.6.0 for core v2.0.0+
+AsyncWebServer_WT32_ETH01 v1.6.1 for core v2.0.0+
 
 ETH Started
 ETH Connected
@@ -1487,17 +1505,13 @@ ETH MAC: A8:48:FA:08:4B:FF, IPv4: 192.168.2.76
 FULL_DUPLEX, 100Mbps
 HTTP EthernetWebServer is @ IP : 192.168.2.232
 
-HEAP DATA - Pre Create Arduino String  Max heap: 326680  Free heap: 216212  Used heap: 110468
+HEAP DATA - Pre Create Arduino String  Max heap: 326680  Free heap: 216200  Used heap: 110480
 .
 HEAP DATA - Pre Send  Max heap: 326680  Free heap: 212292  Used heap: 114388
 
-HEAP DATA - Post Send  Max heap: 326680  Free heap: 205848  Used heap: 120832
-.
-HEAP DATA - Post Send  Max heap: 326680  Free heap: 205816  Used heap: 120864
-..
-HEAP DATA - Post Send  Max heap: 326680  Free heap: 205812  Used heap: 120868
-...... ..
-HEAP DATA - Post Send  Max heap: 326680  Free heap: 205804  Used heap: 120876
+HEAP DATA - Post Send  Max heap: 326680  Free heap: 205832  Used heap: 120848
+
+HEAP DATA - Post Send  Max heap: 326680  Free heap: 205800  Used heap: 120880
 ........ .......... .......... .......... .......... .......... ..........
 Out String Length=31282
 .......... .
@@ -1506,25 +1520,26 @@ Out String Length=31282
 While using `Arduino String`, the HEAP usage is very large
 
 
-#### Async_AdvancedWebServer_MemoryIssues_SendArduinoString  ===> very large heap (152,088 bytes)
+#### Async_AdvancedWebServer_MemoryIssues_SendArduinoString  ===> very large heap (152,136 bytes)
 
 ```
 Start Async_AdvancedWebServer_MemoryIssues_SendArduinoString on WT32-ETH01 with ETH_PHY_LAN8720
-AsyncWebServer_WT32_ETH01 v1.6.0 for core v2.0.0+
+AsyncWebServer_WT32_ETH01 v1.6.1 for core v2.0.0+
 
 ETH Started
 ETH Connected
-ETH MAC: A8:48:FA:08:4B:FF, IPv4: 192.168.2.76
+ETH MAC: A8:48:FA:08:4B:FF, IPv4: 192.168.2.232
 FULL_DUPLEX, 100Mbps
 HTTP EthernetWebServer is @ IP : 192.168.2.232
 
-HEAP DATA - Pre Create Arduino String  Max heap: 326952  Free heap: 256484  Used heap: 70468
+HEAP DATA - Pre Create Arduino String  Max heap: 326968  Free heap: 256504  Used heap: 70464
 .
-HEAP DATA - Pre Send  Max heap: 326952  Free heap: 212600  Used heap: 114352
+HEAP DATA - Pre Send  Max heap: 326968  Free heap: 212596  Used heap: 114372
 
-HEAP DATA - Post Send  Max heap: 326952  Free heap: 174864  Used heap: 152088
-....... .......... .......... ..........
-.......... .......... .......... ........
+HEAP DATA - Post Send  Max heap: 326968  Free heap: 174856  Used heap: 152112
+......... .......... .......... .......... ...
+HEAP DATA - Post Send  Max heap: 326968  Free heap: 174832  Used heap: 152136
+....... .......... ..........
 Out String Length=31247
 .. .......... .
 ```
@@ -1573,13 +1588,13 @@ Submit issues to: [AsyncWebServer_WT32_ETH01 issues](https://github.com/khoih-pr
 
 ## DONE
 
- 1. Initial port to WT32_ETH01 boards using built-in LAN8720A Ethernet
+ 1. Initial port to `WT32_ETH01` boards using built-in `LAN8720A` Ethernet
  2. Add more examples.
  3. Add debugging features.
  4. Add Table-of-Contents and Version String
- 5. Support breaking ESP32 core v2.0.0+ as well as v1.0.6-
- 6. Auto detect ESP32 core v1.0.6- or v2.0.0+ to use correct settings
- 7. Display compiler `#warning` only when DEBUG_LEVEL is 3+
+ 5. Support breaking ESP32 core `v2.0.0+` as well as `v1.0.6-`
+ 6. Auto detect ESP32 core `v1.0.6-` or `v2.0.0+` to use correct settings
+ 7. Display compiler `#warning` only when `DEBUG_LEVEL` is 3+
  8. Fix AsyncWebSocket bug
  9. Support using `CString` to save heap to send `very large data`. Check [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8)
  
@@ -1591,7 +1606,9 @@ Submit issues to: [AsyncWebServer_WT32_ETH01 issues](https://github.com/khoih-pr
 ### Contributions and Thanks
 
 1. Based on and modified from [Hristo Gochkov's ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer). Many thanks to [Hristo Gochkov](https://github.com/me-no-dev) for great [ESPAsyncWebServer Library](https://github.com/me-no-dev/ESPAsyncWebServer)
-2. Thanks to [salasidis](https://github.com/salasidis) aka [rs77can](https://forum.arduino.cc/u/rs77can) to discuss and make the mavellous PR [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8), leading to `v1.2.0` to support using `CString` to save heap to send `very large data`
+2. Thanks to [salasidis](https://github.com/salasidis) aka [rs77can](https://forum.arduino.cc/u/rs77can) to discuss and make the following `marvellous` PRs in [Portenta_H7_AsyncWebServer library](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer)
+- [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8), leading to `v1.6.0` to support using `CString` in optional `SDRAM` to save heap to send `very large data`
+- [All memmove() removed - string no longer destroyed #11](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/11), leading to `v1.6.1` to remove `memmove()` and not to destroy String anymore
 
 <table>
   <tr>
