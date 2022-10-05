@@ -107,7 +107,7 @@
 
 ### Important Note from v1.6.0
 
-The new `v1.6.0+` has added a new and powerful feature to permit using `CString` in optional `SDRAM` to save heap to send `very large data`.
+The new `v1.6.0+` has added a new and powerful feature to permit using `CString` to save heap to send `very large data`.
 
 Check the `marvelleous` PRs of **@salasidis** in [Portenta_H7_AsyncWebServer library](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer)
 - [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8)
@@ -120,7 +120,7 @@ and these new examples
 
 If using Arduino String, to send a buffer around 30 KBytes, the used `Max Heap` is around **152,136 bytes**
 
-If using CString in regular memory, with the same 30 KBytes, the used `Max Heap` is around **120,880 bytes), saving around a buffer size (30 KBytes)**
+If using CString in regular memory, with the same 30 KBytes, the used `Max Heap` is around **120,880 bytes, saving around a buffer size (30 KBytes)**
 
 This is very critical in use-cases where sending `very large data` is necessary, without `heap-allocation-error`.
 
@@ -155,7 +155,7 @@ such as
 request->send(200, textPlainStr, cStr);
 ```
 
-The required additional HEAP is also about **2 times of the CString size** because of `unnecessary copies` of the CString in HEAP.  Avoid this `unefficient` way.
+The required additional HEAP is also about **2 times of the CString size** because of `unnecessary copies` of the CString in HEAP. Avoid this `unefficient` way.
 
 
 3. To use `CString` without copying while sending. Use function
@@ -172,7 +172,7 @@ such as
 request->send(200, textPlainStr, cStr, false);
 ```
 
-The required additional HEAP is about **1 times of the CString size**. This way is the best and most efficient way to use by avoiding of `unnecessary copies` of the CString in HEAP
+The required additional HEAP is about **1 times of the CString size**. This way is the best and **most efficient way** to use by avoiding of `unnecessary copies` of the CString in HEAP
 
 
 
@@ -1607,7 +1607,7 @@ Submit issues to: [AsyncWebServer_WT32_ETH01 issues](https://github.com/khoih-pr
 
 1. Based on and modified from [Hristo Gochkov's ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer). Many thanks to [Hristo Gochkov](https://github.com/me-no-dev) for great [ESPAsyncWebServer Library](https://github.com/me-no-dev/ESPAsyncWebServer)
 2. Thanks to [salasidis](https://github.com/salasidis) aka [rs77can](https://forum.arduino.cc/u/rs77can) to discuss and make the following `marvellous` PRs in [Portenta_H7_AsyncWebServer library](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer)
-- [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8), leading to `v1.6.0` to support using `CString` in optional `SDRAM` to save heap to send `very large data`
+- [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8), leading to `v1.6.0` to support using `CString` to save heap to send `very large data`
 - [All memmove() removed - string no longer destroyed #11](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/11), leading to `v1.6.1` to remove `memmove()` and not to destroy String anymore
 
 <table>
