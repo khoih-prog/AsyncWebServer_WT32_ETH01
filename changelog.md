@@ -11,6 +11,7 @@
 ## Table of contents
 
 * [Changelog](#changelog)
+  * [Releases v1.6.1](#releases-v161)
   * [Releases v1.6.0](#releases-v160)
   * [Releases v1.5.0](#releases-v150)
   * [Releases v1.4.1](#releases-v141)
@@ -25,6 +26,10 @@
 ---
 
 ## Changelog
+
+#### Releases v1.6.1
+
+1. Don't need `memmove()`, CString no longer destroyed. Check [All memmove() removed - string no longer destroyed #11](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/11)
 
 #### Releases v1.6.0
 

@@ -22,7 +22,7 @@
   You should have received a copy of the GNU Lesser General Public License along with this library; 
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
-  Version: 1.6.0
+  Version: 1.6.1
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -34,6 +34,7 @@
   1.4.1   K Hoang      29/11/2021 Fix bug in examples to reduce connection time
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
   1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
+  1.6.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
  *****************************************************************************************************************************/
  
 #ifndef ASYNCEVENTSOURCE_H_
