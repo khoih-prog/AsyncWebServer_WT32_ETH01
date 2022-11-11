@@ -1633,7 +1633,7 @@ AsyncWebServer is @ IP : 192.168.2.232
 [AWS] Bytes sent in chunk = 0
 ```
 
-You can access the Async Advanced WebServers @ the server IP and corresponding ports (8080, 8081 and 8082)
+You can access the Async Advanced WebServers @ the server IP
 
 <p align="center">
     <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/raw/main/pics/AsyncWebServer_SendChunked.png">
