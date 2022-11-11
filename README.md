@@ -8,7 +8,8 @@
 
 <a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Donate to my libraries using BuyMeACoffee" style="height: 50px !important;width: 181px !important;" ></a>
 <a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" style="height: 20px !important;width: 200px !important;" ></a>
-
+<a href="https://profile-counter.glitch.me/khoih-prog/count.svg" title="Total Visitor count"><img src="https://profile-counter.glitch.me/khoih-prog/count.svg" style="height: 30px;width: 200px;"></a>
+<a href="https://profile-counter.glitch.me/khoih-prog-AsyncWebServer_WT32_ETH01/count.svg" title="Visitor count"><img src="https://profile-counter.glitch.me/khoih-prog-AsyncWebServer_WT32_ETH01/count.svg" style="height: 30px;width: 200px;"></a>
 
 ---
 ---
@@ -89,9 +90,13 @@
   * [ 8. AsyncSimpleServer_WT32_ETH01](examples/AsyncSimpleServer_WT32_ETH01)
   * [ 9. Async_AdvancedWebServer_MemoryIssues_SendArduinoString](examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString) **New**
   * [10. Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) **New**
+  * [11. Async_AdvancedWebServer_SendChunked](examples/Async_AdvancedWebServer_SendChunked) **New**
+  * [12. AsyncWebServer_SendChunked](examples/AsyncWebServer_SendChunked) **New**
 * [Debug Terminal Output Samples](#debug-terminal-output-samples)
   * [1. AsyncMultiWebServer_WT32_ETH01 on WT32-ETH01 with ETH_PHY_LAN8720](#1-asyncmultiwebserver_wt32_eth01-on-wt32-eth01-with-eth_phy_lan8720)
   * [2. Async_AdvancedWebServer_MemoryIssues_Send_CString on WT32-ETH01 with ETH_PHY_LAN8720](#2-Async_AdvancedWebServer_MemoryIssues_Send_CString-on-wt32-eth01-with-eth_phy_lan8720)
+  * [3. Async_AdvancedWebServer_SendChunked on WT32-ETH01 with ETH_PHY_LAN8720](#3-Async_AdvancedWebServer_SendChunked-on-wt32-eth01-with-eth_phy_lan8720)
+  * [4. AsyncWebServer_SendChunked on WT32-ETH01 with ETH_PHY_LAN8720](#4-AsyncWebServer_SendChunked-on-wt32-eth01-with-eth_phy_lan8720)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
 * [Issues](#issues)
@@ -372,14 +377,14 @@ request->multipart();     // bool:    True if the request has content type "mult
 int headers = request->headers();
 int i;
 
-for(i=0;i<headers;i++)
+for (i=0;i<headers;i++)
 {
   AsyncWebHeader* h = request->getHeader(i);
   Serial.printf("HEADER[%s]: %s\n", h->name().c_str(), h->value().c_str());
 }
 
 //get specific header by name
-if(request->hasHeader("MyHeader"))
+if (request->hasHeader("MyHeader"))
 {
   AsyncWebHeader* h = request->getHeader("MyHeader");
   Serial.printf("MyHeader: %s\n", h->value().c_str());
@@ -389,13 +394,13 @@ if(request->hasHeader("MyHeader"))
 int headers = request->headers();
 int i;
 
-for(i=0;i<headers;i++)
+for (i=0;i<headers;i++)
 {
   Serial.printf("HEADER[%s]: %s\n", request->headerName(i).c_str(), request->header(i).c_str());
 }
 
 //get specific header by name (Compatibility)
-if(request->hasHeader("MyHeader"))
+if (request->hasHeader("MyHeader"))
 {
   Serial.printf("MyHeader: %s\n", request->header("MyHeader").c_str());
 }
@@ -407,16 +412,16 @@ if(request->hasHeader("MyHeader"))
 //List all parameters
 int params = request->params();
 
-for(int i=0;i<params;i++)
+for (int i=0;i<params;i++)
 {
   AsyncWebParameter* p = request->getParam(i);
   
-  if(p->isFile())
+  if (p->isFile())
   { 
     //p->isPost() is also true
     Serial.printf("FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
   } 
-  else if(p->isPost())
+  else if (p->isPost())
   {
     Serial.printf("POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
   } 
@@ -427,27 +432,27 @@ for(int i=0;i<params;i++)
 }
 
 //Check if GET parameter exists
-if(request->hasParam("download"))
+if (request->hasParam("download"))
   AsyncWebParameter* p = request->getParam("download");
 
 //Check if POST (but not File) parameter exists
-if(request->hasParam("download", true))
+if (request->hasParam("download", true))
   AsyncWebParameter* p = request->getParam("download", true);
 
 //Check if FILE was uploaded
-if(request->hasParam("download", true, true))
+if (request->hasParam("download", true, true))
   AsyncWebParameter* p = request->getParam("download", true, true);
 
 //List all parameters (Compatibility)
 int args = request->args();
 
-for(int i=0;i<args;i++)
+for (int i=0;i<args;i++)
 {
   Serial.printf("ARG[%s]: %s\n", request->argName(i).c_str(), request->arg(i).c_str());
 }
 
 //Check if parameter exists (Compatibility)
-if(request->hasArg("download"))
+if (request->hasArg("download"))
   String arg = request->arg("download");
 ```
 
@@ -530,7 +535,7 @@ request->send(response);
 ```cpp
 String processor(const String& var)
 {
-  if(var == "HELLO_FROM_TEMPLATE")
+  if (var == "HELLO_FROM_TEMPLATE")
     return F("Hello world!");
     
   return String();
@@ -547,7 +552,7 @@ request->send(Serial, "text/plain", 12, processor);
 ```cpp
 String processor(const String& var)
 {
-  if(var == "HELLO_FROM_TEMPLATE")
+  if (var == "HELLO_FROM_TEMPLATE")
     return F("Hello world!");
   return String();
 }
@@ -598,7 +603,7 @@ request->send(response);
 ```cpp
 String processor(const String& var)
 {
-  if(var == "HELLO_FROM_TEMPLATE")
+  if (var == "HELLO_FROM_TEMPLATE")
     return F("Hello world!");
     
   return String();
@@ -623,7 +628,7 @@ request->send("text/plain", 128, [](uint8_t *buffer, size_t maxLen, size_t index
 ```cpp
 String processor(const String& var)
 {
-  if(var == "HELLO_FROM_TEMPLATE")
+  if (var == "HELLO_FROM_TEMPLATE")
     return F("Hello world!");
   return String();
 }
@@ -670,7 +675,7 @@ Used when content length is unknown. Works best if the client supports HTTP/1.1
 ```cpp
 String processor(const String& var)
 {
-  if(var == "HELLO_FROM_TEMPLATE")
+  if (var == "HELLO_FROM_TEMPLATE")
     return F("Hello world!");
     
   return String();
@@ -717,7 +722,7 @@ response->print("<h3>Headers</h3>");
 response->print("<ul>");
 int headers = request->headers();
 
-for(int i=0;i<headers;i++)
+for (int i=0;i<headers;i++)
 {
   AsyncWebHeader* h = request->getHeader(i);
   response->printf("<li>%s: %s</li>", h->name().c_str(), h->value().c_str());
@@ -730,15 +735,15 @@ response->print("<ul>");
 
 int params = request->params();
 
-for(int i=0;i<params;i++)
+for (int i=0;i<params;i++)
 {
   AsyncWebParameter* p = request->getParam(i);
   
-  if(p->isFile())
+  if (p->isFile())
   {
     response->printf("<li>FILE[%s]: %s, size: %u</li>", p->name().c_str(), p->value().c_str(), p->size());
   } 
-  else if(p->isPost())
+  else if (p->isPost())
   {
     response->printf("<li>POST[%s]: %s</li>", p->name().c_str(), p->value().c_str());
   } 
@@ -817,12 +822,12 @@ class OneParamRewrite : public AsyncWebRewrite
 
       _paramIndex = _from.indexOf('{');
 
-      if( _paramIndex >=0 && _from.endsWith("}")) 
+      if ( _paramIndex >=0 && _from.endsWith("}")) 
       {
         _urlPrefix = _from.substring(0, _paramIndex);
         int index = _params.indexOf('{');
         
-        if(index >= 0) 
+        if (index >= 0) 
         {
           _params = _params.substring(0, index);
         }
@@ -837,9 +842,9 @@ class OneParamRewrite : public AsyncWebRewrite
 
   bool match(AsyncWebServerRequest *request) override 
   {
-    if(request->url().startsWith(_urlPrefix)) 
+    if (request->url().startsWith(_urlPrefix)) 
     {
-      if(_paramIndex >= 0) 
+      if (_paramIndex >= 0) 
       {
         _params = _paramsBackup + request->url().substring(_paramIndex);
       } 
@@ -906,46 +911,46 @@ without starting another listening service or using different port
 
 void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len)
 {
-  if(type == WS_EVT_CONNECT)
+  if (type == WS_EVT_CONNECT)
   {
     //client connected
     Serial.printf("ws[%s][%u] connect\n", server->url(), client->id());
     client->printf("Hello Client %u :)", client->id());
     client->ping();
   } 
-  else if(type == WS_EVT_DISCONNECT)
+  else if (type == WS_EVT_DISCONNECT)
   {
     //client disconnected
     Serial.printf("ws[%s][%u] disconnect: %u\n", server->url(), client->id());
   } 
-  else if(type == WS_EVT_ERROR)
+  else if (type == WS_EVT_ERROR)
   {
     //error was received from the other end
     Serial.printf("ws[%s][%u] error(%u): %s\n", server->url(), client->id(), *((uint16_t*)arg), (char*)data);
   } 
-  else if(type == WS_EVT_PONG)
+  else if (type == WS_EVT_PONG)
   {
     //pong message was received (in response to a ping request maybe)
     Serial.printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len)?(char*)data:"");
   } 
-  else if(type == WS_EVT_DATA)
+  else if (type == WS_EVT_DATA)
   {
     //data packet
     AwsFrameInfo * info = (AwsFrameInfo*)arg;
     
-    if(info->final && info->index == 0 && info->len == len)
+    if (info->final && info->index == 0 && info->len == len)
     {
       //the whole message is in a single frame and we got all of it's data
       Serial.printf("ws[%s][%u] %s-message[%llu]: ", server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
       
-      if(info->opcode == WS_TEXT)
+      if (info->opcode == WS_TEXT)
       {
         data[len] = 0;
         Serial.printf("%s\n", (char*)data);
       } 
       else 
       {
-        for(size_t i=0; i < info->len; i++)
+        for (size_t i=0; i < info->len; i++)
         {
           Serial.printf("%02x ", data[i]);
         }
@@ -953,7 +958,7 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
         Serial.printf("\n");
       }
       
-      if(info->opcode == WS_TEXT)
+      if (info->opcode == WS_TEXT)
         client->text("I got your text message");
       else
         client->binary("I got your binary message");
@@ -961,9 +966,9 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
     else 
     {
       //message is comprised of multiple frames or the frame is split into multiple packets
-      if(info->index == 0)
+      if (info->index == 0)
       {
-        if(info->num == 0)
+        if (info->num == 0)
           Serial.printf("ws[%s][%u] %s-message start\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
           
         Serial.printf("ws[%s][%u] frame[%u] start[%llu]\n", server->url(), client->id(), info->num, info->len);
@@ -971,28 +976,28 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
 
       Serial.printf("ws[%s][%u] frame[%u] %s[%llu - %llu]: ", server->url(), client->id(), info->num, (info->message_opcode == WS_TEXT)?"text":"binary", info->index, info->index + len);
       
-      if(info->message_opcode == WS_TEXT)
+      if (info->message_opcode == WS_TEXT)
       {
         data[len] = 0;
         Serial.printf("%s\n", (char*)data);
       } 
       else 
       {
-        for(size_t i=0; i < len; i++){
+        for (size_t i=0; i < len; i++){
           Serial.printf("%02x ", data[i]);
         }
         Serial.printf("\n");
       }
 
-      if((info->index + len) == info->len)
+      if ((info->index + len) == info->len)
       {
         Serial.printf("ws[%s][%u] frame[%u] end[%llu]\n", server->url(), client->id(), info->num, info->len);
         
-        if(info->final)
+        if (info->final)
         {
           Serial.printf("ws[%s][%u] %s-message end\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
           
-          if(info->message_opcode == WS_TEXT)
+          if (info->message_opcode == WS_TEXT)
             client->text("I got your text message");
           else
             client->binary("I got your binary message");
@@ -1078,7 +1083,8 @@ void sendDataWs(AsyncWebSocketClient * client)
 Browsers sometimes do not correctly close the websocket connection, even when the `close()` function is called in javascript.  This will eventually exhaust the web server's resources and will cause the server to crash.  Periodically calling the `cleanClients()` function from the main `loop()` function limits the number of clients by closing the oldest client when the maximum number of clients has been exceeded.  This can called be every cycle, however, if you wish to use less power, then calling as infrequently as once per second is sufficient.
 
 ```cpp
-void loop(){
+void loop()
+{
   ws.cleanupClients();
 }
 ```
@@ -1101,7 +1107,7 @@ void setup()
   // setup ......
   events.onConnect([](AsyncEventSourceClient *client)
   {
-    if(client->lastId())
+    if (client->lastId())
     {
       Serial.printf("Client reconnected! Last message ID that it got is: %u\n", client->lastId());
     }
@@ -1119,7 +1125,9 @@ void setup()
 
 void loop()
 {
-  if(eventTriggered){ // your logic here
+  if (eventTriggered)
+  { 
+    // your logic here
     //send event "myevent"
     events.send("my event content","myevent",millis());
   }
@@ -1166,7 +1174,8 @@ To remove handler:
 
 ```cpp
 // save callback for particular URL path
-auto handler = server.on("/some/path", [](AsyncWebServerRequest *request){
+auto handler = server.on("/some/path", [](AsyncWebServerRequest *request)
+{
   //do something useful
 });
 
@@ -1176,7 +1185,8 @@ server.removeHandler(&handler);
 // same with rewrites
 server.removeRewrite(&someRewrite);
 
-server.onNotFound([](AsyncWebServerRequest *request){
+server.onNotFound([](AsyncWebServerRequest *request)
+{
   request->send(404);
 });
 
@@ -1431,20 +1441,21 @@ build_flags =
  8. [AsyncSimpleServer_WT32_ETH01](examples/AsyncSimpleServer_WT32_ETH01)
  9. [Async_AdvancedWebServer_MemoryIssues_SendArduinoString](examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString) **New**
 10. [Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) **New**
-
+11. [Async_AdvancedWebServer_SendChunked](examples/Async_AdvancedWebServer_SendChunked) **New**
+12. [AsyncWebServer_SendChunked](examples/AsyncWebServer_SendChunked) **New**
 
 ---
 ---
 
 ### Example [Async_AdvancedWebServer](examples/Async_AdvancedWebServer)
 
-https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/9087dbc7adf03139f5967b784a9f0c7a0c358339/examples/Async_AdvancedWebServer/Async_AdvancedWebServer.ino#L41-L190
+https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/b24816d562013bb868e450863c1ab8bbb77fb8ee/examples/Async_AdvancedWebServer/Async_AdvancedWebServer.ino#L41-L194
 
 
 You can access the Async Advanced WebServer @ the server IP
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/pics/Async_AdvancedWebServer.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/raw/main/pics/Async_AdvancedWebServer.png">
 </p>
 
 ---
@@ -1459,7 +1470,7 @@ Following are debug terminal output and screen shots when running example [Async
 
 ```
 Starting AsyncMultiWebServer_WT32_ETH01 on WT32-ETH01 with ETH_PHY_LAN8720
-AsyncWebServer_WT32_ETH01 v1.6.1 for core v2.0.0+
+AsyncWebServer_WT32_ETH01 v1.6.2 for core v2.0.0+
 ETH MAC: A8:03:2A:A1:61:73, IPv4: 192.168.2.232
 FULL_DUPLEX, 100Mbps
 
@@ -1475,15 +1486,15 @@ HTTP server started at ports 8082
 You can access the Async Advanced WebServers @ the server IP and corresponding ports (8080, 8081 and 8082)
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/pics/AsyncMultiWebServer_WT32_SVR1.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/raw/main/pics/AsyncMultiWebServer_WT32_SVR1.png">
 </p>
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/pics/AsyncMultiWebServer_WT32_SVR2.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/raw/main/pics/AsyncMultiWebServer_WT32_SVR2.png">
 </p>
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/pics/AsyncMultiWebServer_WT32_SVR3.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/raw/main/pics/AsyncMultiWebServer_WT32_SVR3.png">
 </p>
 
 ---
@@ -1497,7 +1508,7 @@ Following is the debug terminal and screen shot when running example [Async_Adva
 
 ```
 Start Async_AdvancedWebServer_MemoryIssues_Send_CString on WT32-ETH01 with ETH_PHY_LAN8720
-AsyncWebServer_WT32_ETH01 v1.6.1 for core v2.0.0+
+AsyncWebServer_WT32_ETH01 v1.6.2 for core v2.0.0+
 
 ETH Started
 ETH Connected
@@ -1524,7 +1535,7 @@ While using `Arduino String`, the HEAP usage is very large
 
 ```
 Start Async_AdvancedWebServer_MemoryIssues_SendArduinoString on WT32-ETH01 with ETH_PHY_LAN8720
-AsyncWebServer_WT32_ETH01 v1.6.1 for core v2.0.0+
+AsyncWebServer_WT32_ETH01 v1.6.2 for core v2.0.0+
 
 ETH Started
 ETH Connected
@@ -1548,8 +1559,142 @@ Out String Length=31247
 You can access the Async Advanced WebServers at the displayed server IP, e.g. `192.168.2.232`
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/blob/main/pics/Async_AdvancedWebServer_MemoryIssues_Send_CString.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/raw/main/pics/Async_AdvancedWebServer_MemoryIssues_Send_CString.png">
 </p>
+
+---
+
+#### 3. Async_AdvancedWebServer_SendChunked on WT32-ETH01 with ETH_PHY_LAN8720
+
+Following is debug terminal output when running example [Async_AdvancedWebServer_SendChunked](examples/Async_AdvancedWebServer_SendChunked) on `WT32-ETH01 with ETH_PHY_LAN8720`, using ESP32 core `v2.0.0+`, to demo how to use `beginChunkedResponse()` to send large `html` in chunks
+
+```
+Start Async_AdvancedWebServer_SendChunked on WT32-ETH01 with ETH_PHY_LAN8720
+AsyncWebServer_WT32_ETH01 v1.6.2 for core v2.0.0+
+
+ETH Started
+ETH Connected
+ETH MAC: A8:48:FA:08:4B:FF, IPv4: 192.168.2.115
+FULL_DUPLEX, 100Mbps
+AsyncWebServer is @ IP : 192.168.2.232
+.[AWS] Total length to send in chunks = 31259
+[AWS] Bytes sent in chunk = 5620
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 2727
+[AWS] Bytes sent in chunk = 0
+[AWS] Total length to send in chunks = 31279
+[AWS] Bytes sent in chunk = 5620
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2763
+[AWS] Bytes sent in chunk = 0
+.[AWS] Total length to send in chunks = 31231
+[AWS] Bytes sent in chunk = 5620
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 1279
+[AWS] Bytes sent in chunk = 0
+[AWS] Total length to send in chunks = 31239
+[AWS] Bytes sent in chunk = 5620
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 2723
+[AWS] Bytes sent in chunk = 0
+```
+
+You can access the Async Advanced WebServers @ the server IP and corresponding ports (8080, 8081 and 8082)
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01/raw/main/pics/AsyncWebServer_SendChunked.png">
+</p>
+
+
+---
+
+#### 4. AsyncWebServer_SendChunked on WT32-ETH01 with ETH_PHY_LAN8720
+
+Following is debug terminal output when running example [AsyncWebServer_SendChunked](examples/AsyncWebServer_SendChunked) on `WT32-ETH01 with ETH_PHY_LAN8720`, using ESP32 core `v2.0.0+`, to demo how to use `beginChunkedResponse()` to send large `html` in chunks
+
+
+```
+Start AsyncWebServer_SendChunked on WT32-ETH01 with ETH_PHY_LAN8720
+AsyncWebServer_WT32_ETH01 v1.6.2 for core v2.0.0+
+
+ETH Started
+ETH Connected
+ETH MAC: A8:48:FA:08:4B:FF, IPv4: 192.168.2.232
+FULL_DUPLEX, 100Mbps
+AsyncWebServer is @ IP : 192.168.2.232
+.[AWS] Total length to send in chunks = 47303
+[AWS] Bytes sent in chunk = 5624
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 1599
+[AWS] Bytes sent in chunk = 0
+.[AWS] Total length to send in chunks = 47303
+[AWS] Bytes sent in chunk = 5624
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 1428
+[AWS] Bytes sent in chunk = 4300
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 2864
+[AWS] Bytes sent in chunk = 1583
+[AWS] Bytes sent in chunk = 0
+```
 
 ---
 ---
@@ -1565,6 +1710,8 @@ Debug is enabled by default on Serial. Debug Level from 0 to 4. To disable, chan
 // Debug Level from 0 to 4
 #define _ASYNC_WEBSERVER_LOGLEVEL_       0
 ```
+
+---
 
 ### Troubleshooting
 
@@ -1585,6 +1732,7 @@ Submit issues to: [AsyncWebServer_WT32_ETH01 issues](https://github.com/khoih-pr
 
  1. Fix bug. Add enhancement
 
+---
 
 ## DONE
 
@@ -1597,8 +1745,10 @@ Submit issues to: [AsyncWebServer_WT32_ETH01 issues](https://github.com/khoih-pr
  7. Display compiler `#warning` only when `DEBUG_LEVEL` is 3+
  8. Fix AsyncWebSocket bug
  9. Support using `CString` to save heap to send `very large data`. Check [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8)
- 
- 
+10. Add examples [Async_AdvancedWebServer_SendChunked](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_AdvancedWebServer_SendChunked) and [AsyncWebServer_SendChunked](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/AsyncWebServer_SendChunked) to demo how to use `beginChunkedResponse()` to send large `html` in chunks
+11. Use `allman astyle` and add `utils`
+
+
 ---
 ---
 
