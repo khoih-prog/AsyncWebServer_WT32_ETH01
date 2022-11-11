@@ -1,28 +1,28 @@
 /****************************************************************************************************************************
-  AsyncWebSynchronization.h - Dead simple Ethernet AsyncWebServer.  
-   
+  AsyncWebSynchronization.h - Dead simple Ethernet AsyncWebServer.
+
   For LAN8720 Ethernet in WT32_ETH01 (ESP32 + LAN8720)
 
   AsyncWebServer_WT32_ETH01 is a library for the Ethernet LAN8720 in WT32_ETH01 to run AsyncWebServer
 
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01
-  Licensed under GPLv3 license 
+  Licensed under GPLv3 license
 
   Original author: Hristo Gochkov
-  
+
   Copyright (c) 2016 Hristo Gochkov. All rights reserved.
-  
+
   This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
 
   This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 
-  You should have received a copy of the GNU Lesser General Public License along with this library; 
+  You should have received a copy of the GNU Lesser General Public License along with this library;
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-  
-  Version: 1.6.1
+
+  Version: 1.6.2
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -35,8 +35,9 @@
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
   1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
   1.6.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
+  1.6.2   K Hoang      10/11/2022 Add examples to demo how to use beginChunkedResponse() to send in chunks
  *****************************************************************************************************************************/
- 
+
 #ifndef ASYNCWEBSYNCHRONIZATION_H_
 #define ASYNCWEBSYNCHRONIZATION_H_
 
@@ -54,7 +55,7 @@ class AsyncWebLock
     mutable void *_lockedBy;
 
   public:
-    AsyncWebLock() 
+    AsyncWebLock()
     {
       _lock = xSemaphoreCreateBinary();
       _lockedBy = NULL;
@@ -63,31 +64,31 @@ class AsyncWebLock
 
     /////////////////////////////////////////////////
 
-    ~AsyncWebLock() 
+    ~AsyncWebLock()
     {
       vSemaphoreDelete(_lock);
     }
 
     /////////////////////////////////////////////////
 
-    bool lock() const 
+    bool lock() const
     {
       extern void *pxCurrentTCB;
-      
-      if (_lockedBy != pxCurrentTCB) 
+
+      if (_lockedBy != pxCurrentTCB)
       {
         xSemaphoreTake(_lock, portMAX_DELAY);
         _lockedBy = pxCurrentTCB;
-        
+
         return true;
       }
-      
+
       return false;
     }
 
     /////////////////////////////////////////////////
 
-    void unlock() const 
+    void unlock() const
     {
       _lockedBy = NULL;
       xSemaphoreGive(_lock);
@@ -102,13 +103,13 @@ class AsyncWebLockGuard
     const AsyncWebLock *_lock;
 
   public:
-    AsyncWebLockGuard(const AsyncWebLock &l) 
+    AsyncWebLockGuard(const AsyncWebLock &l)
     {
-      if (l.lock()) 
+      if (l.lock())
       {
         _lock = &l;
-      } 
-      else 
+      }
+      else
       {
         _lock = NULL;
       }
@@ -116,9 +117,9 @@ class AsyncWebLockGuard
 
     /////////////////////////////////////////////////
 
-    ~AsyncWebLockGuard() 
+    ~AsyncWebLockGuard()
     {
-      if (_lock) 
+      if (_lock)
       {
         _lock->unlock();
       }

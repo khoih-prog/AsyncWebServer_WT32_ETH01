@@ -1,7 +1,7 @@
 {
   "name":"AsyncWebServer_WT32_ETH01",
-  "version": "1.6.1",
-  "description":"Asynchronous HTTP and WebSocket Server Library for WT32_ETH01 (ESP32 + LAN8720). Now supporting using CString to save heap to send very large data",
+  "version": "1.6.2",
+  "description":"Asynchronous HTTP and WebSocket Server Library for WT32_ETH01 (ESP32 + LAN8720). Now supporting using CString to save heap to send very large data and with examples to demo how to use beginChunkedResponse() to send large html in chunks",
   "keywords":"http, async, async-webserver, websocket, webserver, esp32, wt32-eth01, lan8720, lan8720a",
   "authors": 
   [

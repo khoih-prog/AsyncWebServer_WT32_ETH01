@@ -1,28 +1,28 @@
 /****************************************************************************************************************************
-  WebServer.cpp - Dead simple Ethernet AsyncWebServer.  
-   
+  WebServer.cpp - Dead simple Ethernet AsyncWebServer.
+
   For LAN8720 Ethernet in WT32_ETH01 (ESP32 + LAN8720)
 
   AsyncWebServer_WT32_ETH01 is a library for the Ethernet LAN8720 in WT32_ETH01 to run AsyncWebServer
 
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01
-  Licensed under GPLv3 license 
+  Licensed under GPLv3 license
 
   Original author: Hristo Gochkov
-  
+
   Copyright (c) 2016 Hristo Gochkov. All rights reserved.
-  
+
   This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
 
   This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 
-  You should have received a copy of the GNU Lesser General Public License along with this library; 
+  You should have received a copy of the GNU Lesser General Public License along with this library;
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-  
-  Version: 1.6.1
+
+  Version: 1.6.2
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -35,6 +35,7 @@
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
   1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
   1.6.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
+  1.6.2   K Hoang      10/11/2022 Add examples to demo how to use beginChunkedResponse() to send in chunks
  *****************************************************************************************************************************/
 
 #include "AsyncWebServer_WT32_ETH01.h"
@@ -212,7 +213,8 @@ void AsyncWebServer::_attachHandler(AsyncWebServerRequest *request)
 
 /////////////////////////////////////////////////
 
-AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest, 
+AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method,
+                                            ArRequestHandlerFunction onRequest,
                                             ArUploadHandlerFunction onUpload, ArBodyHandlerFunction onBody)
 {
   AsyncCallbackWebHandler* handler = new AsyncCallbackWebHandler();
@@ -228,7 +230,8 @@ AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodCom
 
 /////////////////////////////////////////////////
 
-AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest, 
+AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method,
+                                            ArRequestHandlerFunction onRequest,
                                             ArUploadHandlerFunction onUpload)
 {
   AsyncCallbackWebHandler* handler = new AsyncCallbackWebHandler();
@@ -243,7 +246,8 @@ AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodCom
 
 /////////////////////////////////////////////////
 
-AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest)
+AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method,
+                                            ArRequestHandlerFunction onRequest)
 {
   AsyncCallbackWebHandler* handler = new AsyncCallbackWebHandler();
   handler->setUri(uri);
@@ -268,7 +272,8 @@ AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, ArRequestHandlerFun
 
 /////////////////////////////////////////////////
 
-AsyncStaticWebHandler& AsyncWebServer::serveStatic(const char* uri, fs::FS& fs, const char* path, const char* cache_control)
+AsyncStaticWebHandler& AsyncWebServer::serveStatic(const char* uri, fs::FS& fs, const char* path,
+                                                   const char* cache_control)
 {
   AsyncStaticWebHandler* handler = new AsyncStaticWebHandler(uri, fs, path, cache_control);
   addHandler(handler);

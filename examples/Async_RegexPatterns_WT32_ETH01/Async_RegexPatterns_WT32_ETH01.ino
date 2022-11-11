@@ -1,13 +1,13 @@
 /****************************************************************************************************************************
   Async_RegexPatterns_WT32_ETH01.ino - Dead simple AsyncWebServer for WT32_ETH01
-  
+
   For LAN8720 Ethernet in WT32_ETH01 (ESP32 + LAN8720)
 
   AsyncWebServer_WT32_ETH01 is a library for the Ethernet LAN8720 in WT32_ETH01 to run AsyncWebServer
 
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01
-  Licensed under GPLv3 license 
+  Licensed under GPLv3 license
  *****************************************************************************************************************************/
 //
 // A simple server implementation with regex routes:
@@ -30,7 +30,7 @@
 #define ASYNCWEBSERVER_REGEX      true
 
 #if !( defined(ESP32) )
-  #error This code is designed for WT32_ETH01 to run on ESP32 platform! Please check your Tools->Board setting.
+	#error This code is designed for WT32_ETH01 to run on ESP32 platform! Please check your Tools->Board setting.
 #endif
 
 #include <Arduino.h>
@@ -55,60 +55,63 @@ const char* PARAM_MESSAGE = "message";
 
 void notFound(AsyncWebServerRequest *request)
 {
-  request->send(404, "text/plain", "Not found");
+	request->send(404, "text/plain", "Not found");
 }
 
-void setup() 
+void setup()
 {
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
+	Serial.begin(115200);
 
-  Serial.print(F("\nStart Async_RegexPatterns_WT32_ETH01 on ")); Serial.print(BOARD_NAME);
-  Serial.print(F(" with ")); Serial.println(SHIELD_TYPE);
-  Serial.println(ASYNC_WEBSERVER_WT32_ETH01_VERSION);
+	while (!Serial && millis() < 5000);
 
-  // To be called before ETH.begin()
-  WT32_ETH01_onEvent();
+	Serial.print(F("\nStart Async_RegexPatterns_WT32_ETH01 on "));
+	Serial.print(BOARD_NAME);
+	Serial.print(F(" with "));
+	Serial.println(SHIELD_TYPE);
+	Serial.println(ASYNC_WEBSERVER_WT32_ETH01_VERSION);
 
-  //bool begin(uint8_t phy_addr=ETH_PHY_ADDR, int power=ETH_PHY_POWER, int mdc=ETH_PHY_MDC, int mdio=ETH_PHY_MDIO, 
-  //           eth_phy_type_t type=ETH_PHY_TYPE, eth_clock_mode_t clk_mode=ETH_CLK_MODE);
-  //ETH.begin(ETH_PHY_ADDR, ETH_PHY_POWER, ETH_PHY_MDC, ETH_PHY_MDIO, ETH_PHY_TYPE, ETH_CLK_MODE);
-  ETH.begin(ETH_PHY_ADDR, ETH_PHY_POWER);
+	// To be called before ETH.begin()
+	WT32_ETH01_onEvent();
 
-  // Static IP, leave without this line to get IP via DHCP
-  //bool config(IPAddress local_ip, IPAddress gateway, IPAddress subnet, IPAddress dns1 = 0, IPAddress dns2 = 0);
-  ETH.config(myIP, myGW, mySN, myDNS);
+	//bool begin(uint8_t phy_addr=ETH_PHY_ADDR, int power=ETH_PHY_POWER, int mdc=ETH_PHY_MDC, int mdio=ETH_PHY_MDIO,
+	//           eth_phy_type_t type=ETH_PHY_TYPE, eth_clock_mode_t clk_mode=ETH_CLK_MODE);
+	//ETH.begin(ETH_PHY_ADDR, ETH_PHY_POWER, ETH_PHY_MDC, ETH_PHY_MDIO, ETH_PHY_TYPE, ETH_CLK_MODE);
+	ETH.begin(ETH_PHY_ADDR, ETH_PHY_POWER);
 
-  WT32_ETH01_waitForConnect();
+	// Static IP, leave without this line to get IP via DHCP
+	//bool config(IPAddress local_ip, IPAddress gateway, IPAddress subnet, IPAddress dns1 = 0, IPAddress dns2 = 0);
+	ETH.config(myIP, myGW, mySN, myDNS);
 
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) 
-  {
-    request->send(200, "text/plain", "Hello, world from Async_RegexPatterns_WT32_ETH01 on " + String(BOARD_NAME));
-  });
+	WT32_ETH01_waitForConnect();
 
-  // Send a GET request to <IP>/sensor/<number>
-  server.on("^\\/sensor\\/([0-9]+)$", HTTP_GET, [] (AsyncWebServerRequest * request) 
-  {
-    String sensorNumber = request->pathArg(0);
-    request->send(200, "text/plain", "Hello, sensor: " + sensorNumber);
-  });
+	server.on("/", HTTP_GET, [](AsyncWebServerRequest * request)
+	{
+		request->send(200, "text/plain", "Hello, world from Async_RegexPatterns_WT32_ETH01 on " + String(BOARD_NAME));
+	});
 
-  // Send a GET request to <IP>/sensor/<number>/action/<action>
-  server.on("^\\/sensor\\/([0-9]+)\\/action\\/([a-zA-Z0-9]+)$", HTTP_GET, [] (AsyncWebServerRequest * request) 
-  {
-    String sensorNumber = request->pathArg(0);
-    String action = request->pathArg(1);
-    request->send(200, "text/plain", "Hello, sensor: " + sensorNumber + ", with action: " + action);
-  });
+	// Send a GET request to <IP>/sensor/<number>
+	server.on("^\\/sensor\\/([0-9]+)$", HTTP_GET, [] (AsyncWebServerRequest * request)
+	{
+		String sensorNumber = request->pathArg(0);
+		request->send(200, "text/plain", "Hello, sensor: " + sensorNumber);
+	});
 
-  server.onNotFound(notFound);
+	// Send a GET request to <IP>/sensor/<number>/action/<action>
+	server.on("^\\/sensor\\/([0-9]+)\\/action\\/([a-zA-Z0-9]+)$", HTTP_GET, [] (AsyncWebServerRequest * request)
+	{
+		String sensorNumber = request->pathArg(0);
+		String action = request->pathArg(1);
+		request->send(200, "text/plain", "Hello, sensor: " + sensorNumber + ", with action: " + action);
+	});
 
-  server.begin();
+	server.onNotFound(notFound);
 
-  Serial.print("Server started @ ");
-  Serial.println(ETH.localIP());
+	server.begin();
+
+	Serial.print("Server started @ ");
+	Serial.println(ETH.localIP());
 }
 
-void loop() 
+void loop()
 {
 }

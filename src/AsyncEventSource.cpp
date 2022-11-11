@@ -1,28 +1,28 @@
 /****************************************************************************************************************************
-  AsyncEventSource.cpp - Dead simple Ethernet AsyncWebServer.  
-   
+  AsyncEventSource.cpp - Dead simple Ethernet AsyncWebServer.
+
   For LAN8720 Ethernet in WT32_ETH01 (ESP32 + LAN8720)
 
   AsyncWebServer_WT32_ETH01 is a library for the Ethernet LAN8720 in WT32_ETH01 to run AsyncWebServer
 
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_WT32_ETH01
-  Licensed under GPLv3 license 
+  Licensed under GPLv3 license
 
   Original author: Hristo Gochkov
-  
+
   Copyright (c) 2016 Hristo Gochkov. All rights reserved.
-  
+
   This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
 
   This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 
-  You should have received a copy of the GNU Lesser General Public License along with this library; 
+  You should have received a copy of the GNU Lesser General Public License along with this library;
   if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-  
-  Version: 1.6.1
+
+  Version: 1.6.2
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -35,8 +35,9 @@
   1.5.0   K Hoang      01/10/2022 Fix AsyncWebSocket bug
   1.6.0   K Hoang      04/10/2022 Option to use cString instead of String to save Heap
   1.6.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
+  1.6.2   K Hoang      10/11/2022 Add examples to demo how to use beginChunkedResponse() to send in chunks
  *****************************************************************************************************************************/
- 
+
 #include "Arduino.h"
 #include "AsyncEventSource.h"
 
@@ -232,7 +233,8 @@ size_t AsyncEventSourceMessage::send(AsyncClient *client)
 // Client
 
 AsyncEventSourceClient::AsyncEventSourceClient(AsyncWebServerRequest *request, AsyncEventSource *server)
-  : _messageQueue(LinkedList<AsyncEventSourceMessage * >([](AsyncEventSourceMessage * m) {
+  : _messageQueue(LinkedList<AsyncEventSourceMessage * >([](AsyncEventSourceMessage * m)
+{
   delete  m;
 }))
 {
@@ -294,14 +296,14 @@ void AsyncEventSourceClient::_queueMessage(AsyncEventSourceMessage *dataMessage)
   if (!connected())
   {
     delete dataMessage;
-    
+
     return;
   }
 
   if (_messageQueue.length() >= SSE_MAX_QUEUED_MESSAGES)
   {
     AWS_LOGERROR(F("[AsyncEventSourceClient::_queueMessage] ERROR: Too many messages queued"));
-    
+
     delete dataMessage;
   }
   else
@@ -415,14 +417,14 @@ AsyncEventSource::~AsyncEventSource()
 
 /////////////////////////////////////////////////
 
-void AsyncEventSource::onConnect(ArEventHandlerFunction cb) 
+void AsyncEventSource::onConnect(ArEventHandlerFunction cb)
 {
   _connectcb = cb;
 }
 
 /////////////////////////////////////////////////
 
-void AsyncEventSource::_addClient(AsyncEventSourceClient * client) 
+void AsyncEventSource::_addClient(AsyncEventSourceClient * client)
 {
   /*char * temp = (char *)malloc(2054);
     if(temp != NULL){
@@ -438,23 +440,23 @@ void AsyncEventSource::_addClient(AsyncEventSourceClient * client)
     }*/
 
   _clients.add(client);
-  
+
   if (_connectcb)
     _connectcb(client);
 }
 
 /////////////////////////////////////////////////
 
-void AsyncEventSource::_handleDisconnect(AsyncEventSourceClient * client) 
+void AsyncEventSource::_handleDisconnect(AsyncEventSourceClient * client)
 {
   _clients.remove(client);
 }
 
 /////////////////////////////////////////////////
 
-void AsyncEventSource::close() 
+void AsyncEventSource::close()
 {
-  for (const auto &c : _clients) 
+  for (const auto &c : _clients)
   {
     if (c->connected())
       c->close();
@@ -464,7 +466,7 @@ void AsyncEventSource::close()
 /////////////////////////////////////////////////
 
 // pmb fix
-size_t AsyncEventSource::avgPacketsWaiting() const 
+size_t AsyncEventSource::avgPacketsWaiting() const
 {
   if (_clients.isEmpty())
     return 0;
@@ -472,28 +474,28 @@ size_t AsyncEventSource::avgPacketsWaiting() const
   size_t    aql = 0;
   uint32_t  nConnectedClients = 0;
 
-  for (const auto &c : _clients) 
+  for (const auto &c : _clients)
   {
-    if (c->connected()) 
+    if (c->connected())
     {
       aql += c->packetsWaiting();
       ++nConnectedClients;
     }
   }
-  
+
   //  return aql / nConnectedClients;
   return ((aql) + (nConnectedClients / 2)) / (nConnectedClients); // round up
 }
 
 /////////////////////////////////////////////////
 
-void AsyncEventSource::send(const char *message, const char *event, uint32_t id, uint32_t reconnect) 
+void AsyncEventSource::send(const char *message, const char *event, uint32_t id, uint32_t reconnect)
 {
   String ev = generateEventMessage(message, event, id, reconnect);
-  
-  for (const auto &c : _clients) 
+
+  for (const auto &c : _clients)
   {
-    if (c->connected()) 
+    if (c->connected())
     {
       c->write(ev.c_str(), ev.length());
     }
@@ -502,9 +504,9 @@ void AsyncEventSource::send(const char *message, const char *event, uint32_t id,
 
 /////////////////////////////////////////////////
 
-size_t AsyncEventSource::count() const 
+size_t AsyncEventSource::count() const
 {
-  return _clients.count_if([](AsyncEventSourceClient * c) 
+  return _clients.count_if([](AsyncEventSourceClient * c)
   {
     return c->connected();
   });
@@ -512,25 +514,25 @@ size_t AsyncEventSource::count() const
 
 /////////////////////////////////////////////////
 
-bool AsyncEventSource::canHandle(AsyncWebServerRequest *request) 
+bool AsyncEventSource::canHandle(AsyncWebServerRequest *request)
 {
-  if (request->method() != HTTP_GET || !request->url().equals(_url)) 
+  if (request->method() != HTTP_GET || !request->url().equals(_url))
   {
     return false;
   }
-  
+
   request->addInterestingHeader("Last-Event-ID");
-  
+
   return true;
 }
 
 /////////////////////////////////////////////////
 
-void AsyncEventSource::handleRequest(AsyncWebServerRequest *request) 
+void AsyncEventSource::handleRequest(AsyncWebServerRequest *request)
 {
   if ((_username != "" && _password != "") && !request->authenticate(_username.c_str(), _password.c_str()))
     return request->requestAuthentication();
-    
+
   request->send(new AsyncEventSourceResponse(this));
 }
 
@@ -539,7 +541,7 @@ void AsyncEventSource::handleRequest(AsyncWebServerRequest *request)
 
 // Response
 
-AsyncEventSourceResponse::AsyncEventSourceResponse(AsyncEventSource *server) 
+AsyncEventSourceResponse::AsyncEventSourceResponse(AsyncEventSource *server)
 {
   _server = server;
   _code = 200;
@@ -551,7 +553,7 @@ AsyncEventSourceResponse::AsyncEventSourceResponse(AsyncEventSource *server)
 
 /////////////////////////////////////////////////
 
-void AsyncEventSourceResponse::_respond(AsyncWebServerRequest *request) 
+void AsyncEventSourceResponse::_respond(AsyncWebServerRequest *request)
 {
   String out = _assembleHead(request->version());
   request->client()->write(out.c_str(), _headLength);
@@ -560,12 +562,12 @@ void AsyncEventSourceResponse::_respond(AsyncWebServerRequest *request)
 
 /////////////////////////////////////////////////
 
-size_t AsyncEventSourceResponse::_ack(AsyncWebServerRequest *request, size_t len, uint32_t time __attribute__((unused))) 
+size_t AsyncEventSourceResponse::_ack(AsyncWebServerRequest *request, size_t len, uint32_t time __attribute__((unused)))
 {
-  if (len) 
+  if (len)
   {
     new AsyncEventSourceClient(request, _server);
   }
-  
+
   return 0;
 }
