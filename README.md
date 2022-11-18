@@ -365,8 +365,8 @@ request->version();       // uint8_t: 0 = HTTP/1.0, 1 = HTTP/1.1
 request->method();        // enum:    HTTP_GET, HTTP_POST, HTTP_DELETE, HTTP_PUT, HTTP_PATCH, HTTP_HEAD, HTTP_OPTIONS
 request->url();           // String:  URL of the request (not including host, port or GET parameters)
 request->host();          // String:  The requested host (can be used for virtual hosting)
-request->contentType();   // String:  ContentType of the request (not avaiable in Handler::canHandle)
-request->contentLength(); // size_t:  ContentLength of the request (not avaiable in Handler::canHandle)
+request->contentType();   // String:  ContentType of the request (not available in Handler::canHandle)
+request->contentLength(); // size_t:  ContentLength of the request (not available in Handler::canHandle)
 request->multipart();     // bool:    True if the request has content type "multipart"
 ```
 
